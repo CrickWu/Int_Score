@@ -1,0 +1,230 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+CHAINMISS_ERROR	.\Computation_Utility.h	21;"	d
+CalcRMSDRotationalMatrix	.\Kabsch.cpp	/^double Kabsch::CalcRMSDRotationalMatrix(XYZ *coords1, XYZ *coords2, int len, double *rot, double *weight)$/;"	f	class:Kabsch
+Calc_IS_Score	.\IS_Score_Calc.cpp	/^void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &interface2)$/;"	f
+Calc_Overlap_Factor	.\IS_score.cpp	/^void IS_score::Calc_Overlap_Factor(vector < vector <int> > &in1, vector < vector <int> > &in2, $/;"	f	class:IS_score
+Calc_Small_Dist	.\TM_score.cpp	/^int TM_score::Calc_Small_Dist(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,int *ali_tmp)$/;"	f	class:TM_score
+Calc_TM_Score	.\TM_score.cpp	/^double TM_score::Calc_TM_Score(XYZ *mol1,XYZ *mol2,int lali,double d0,double d8,int SEARCHorNOT,int TM8orTM,$/;"	f	class:TM_score
+Calc_TM_Score_Simple	.\TM_score.cpp	/^double TM_score::Calc_TM_Score_Simple(XYZ *mol1,XYZ *mol2,int lali,double d0,double d8,int TM8orTM,$/;"	f	class:TM_score
+Calc_TM_Score_Single	.\IS_score.cpp	/^double IS_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,double d8,$/;"	f	class:IS_score
+Calc_TM_Score_Single	.\TM_score.cpp	/^double TM_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,double d8,int TM8orTM,$/;"	f	class:TM_score
+Calc_TM_d0	.\TM_score.cpp	/^double TM_score::Calc_TM_d0(double len) \/\/init$/;"	f	class:TM_score
+Calc_TM_d0_Simp	.\TM_score.cpp	/^double TM_score::Calc_TM_d0_Simp(double len) \/\/init$/;"	f	class:TM_score
+DATA_LENG_ERROR	.\Computation_Utility.h	24;"	d
+DIR_CHAR	.\Computation_Utility.cpp	/^char DIR_CHAR=0x2F;$/;"	v
+Dele_TM_Score	.\TM_score.cpp	/^void TM_score::Dele_TM_Score(void)$/;"	f	class:TM_score
+DeleteArray2D	.\Computation_Utility.h	/^inline void DeleteArray2D(A *** warray,int Narray)$/;"	f
+DeleteArray3D	.\Computation_Utility.h	/^inline void DeleteArray3D(A **** warray,int Narray1,int Narray2)$/;"	f
+DeleteArray4D	.\Computation_Utility.h	/^inline void DeleteArray4D(A ***** warray, int Narray1,int Narray2,int Narray3 )$/;"	f
+Dihedral_Angle	.\Computation_Utility.cpp	/^double Dihedral_Angle(double *a,double *b,double *c,int n)$/;"	f
+EQN_EPS	.\Computation_Utility.h	50;"	d
+EqualArray	.\Computation_Utility.h	/^void EqualArray(A *out,A *in,int len)$/;"	f
+EqualArray2D	.\Computation_Utility.h	/^void EqualArray2D(A **out,A **in,int len1,int len2)$/;"	f
+EqualArray3D	.\Computation_Utility.h	/^void EqualArray3D(A ***out,A ***in,int len1,int len2,int len3)$/;"	f
+EqualArray4D	.\Computation_Utility.h	/^void EqualArray4D(A ****out,A ****in,int len1,int len2,int len3,int len4)$/;"	f
+FILE_FORM_ERROR	.\Computation_Utility.h	18;"	d
+FILE_LOAD_ERROR	.\Computation_Utility.h	17;"	d
+FastCalcRMSDAndRotation	.\Kabsch.cpp	/^int Kabsch::FastCalcRMSDAndRotation(double *rot, double *A, double *rmsd, double E0, int len, double minScore)$/;"	f	class:Kabsch
+Get_Max	.\Computation_Utility.h	/^inline int Get_Max(A *input,int totnum,int start=0)$/;"	f
+Get_Min	.\Computation_Utility.h	/^inline int Get_Min(A *input,int totnum,int start=0)$/;"	f
+INT_MAX_NUM	.\Computation_Utility.h	43;"	d
+INT_MIN_NUM	.\Computation_Utility.h	46;"	d
+IS_score	.\IS_score.cpp	/^IS_score::IS_score(int num)$/;"	f	class:IS_score
+IS_score	.\IS_score.h	/^class IS_score : public TM_score$/;"	c
+Init_TM_Score	.\TM_score.cpp	/^void TM_score::Init_TM_Score(int maxlen)$/;"	f	class:TM_score
+InnerProduct	.\Kabsch.cpp	/^double Kabsch::InnerProduct(double *A, XYZ *coords1, XYZ *coords2, XYZ &cen1, XYZ &cen2, int len, double *weight)$/;"	f	class:Kabsch
+Input_TM_Score	.\TM_score.cpp	/^void TM_score::Input_TM_Score(XYZ *mol1,XYZ *mol2,int lali,double d0,double d8)$/;"	f	class:TM_score
+IsZero	.\Computation_Utility.h	51;"	d
+Kabsch	.\Kabsch.cpp	/^Kabsch::Kabsch(const Kabsch & kabsch)$/;"	f	class:Kabsch
+Kabsch	.\Kabsch.cpp	/^Kabsch::Kabsch(void)$/;"	f	class:Kabsch
+Kabsch	.\Kabsch.h	/^class Kabsch$/;"	c
+L_ini	.\TM_score.h	/^	int *L_ini;       \/\/iteration frag$/;"	m	class:TM_score
+Load_iAlign_Interface_File	.\IS_Score_Calc.cpp	/^int Load_iAlign_Interface_File(string &int_file, vector < vector <int> > &output)$/;"	f
+MAX	.\Computation_Utility.cpp	/^double MAX(double x1, double x2, double x3, double x4, double x5, int & b)$/;"	f
+MAX	.\Computation_Utility.cpp	/^double MAX(double x1, double x2, double x3, int & b)$/;"	f
+MAX	.\Computation_Utility.cpp	/^double MAX(double x1, double x2, int & b)$/;"	f
+MAX	.\Computation_Utility.h	/^inline const A MAX(const A &a, const A &b)$/;"	f
+MIN	.\Computation_Utility.h	/^inline const A MIN(const A &a, const A &b)$/;"	f
+MI_Digi_Return	.\Computation_Utility.cpp	/^int MI_Digi_Return(int *digit,int pos,int len)$/;"	f
+MI_Uni_Bak_Map	.\Computation_Utility.cpp	/^void MI_Uni_Bak_Map(int pos,int *output,int *digit,int len) \/\/given pos, return *output$/;"	f
+MI_Uni_For_Map	.\Computation_Utility.cpp	/^void MI_Uni_For_Map(int &pos,int *input,int *digit,int len)  \/\/givin *input, return pos$/;"	f
+M_PI	.\Computation_Utility.h	35;"	d
+Matrix_Add	.\Computation_Utility.cpp	/^int Matrix_Add(vector< vector<double> > & x, const vector< vector<double> > & y)$/;"	f
+Matrix_Addition	.\Computation_Utility.cpp	/^void Matrix_Addition(double **z,double **x, double **y,int n)$/;"	f
+Matrix_Addition	.\Computation_Utility.cpp	/^void Matrix_Addition(double z[3][3],double x[3][3], double y[3][3])$/;"	f
+Matrix_Algebraic	.\Computation_Utility.cpp	/^int Matrix_Algebraic(double **a,double **b,int n,int ii,int jj)$/;"	f
+Matrix_Average	.\Computation_Utility.cpp	/^int Matrix_Average(vector< vector<double> > & x, const vector< vector<double> > & y, double weight)$/;"	f
+Matrix_Cholesky	.\Computation_Utility.cpp	/^int Matrix_Cholesky(double **a,double **b,int n)$/;"	f
+Matrix_Determinant	.\Computation_Utility.cpp	/^double Matrix_Determinant(double **a,int n)$/;"	f
+Matrix_Determinant	.\Computation_Utility.cpp	/^double Matrix_Determinant(double a[3][3])$/;"	f
+Matrix_Equal	.\Computation_Utility.cpp	/^void Matrix_Equal(double **a,double **b,int n1,int n2)$/;"	f
+Matrix_Equal	.\Computation_Utility.cpp	/^void Matrix_Equal(double a[3][3],double b[3][3])$/;"	f
+Matrix_Inverse	.\Computation_Utility.cpp	/^int Matrix_Inverse(double **a,double **b,int n)$/;"	f
+Matrix_Multiply	.\Computation_Utility.cpp	/^int Matrix_Multiply(vector< vector<double> > & x, const vector< vector<double> > & y)$/;"	f
+Matrix_Multiply	.\Computation_Utility.cpp	/^void Matrix_Multiply(double **z,double **x,double **y,int n)$/;"	f
+Matrix_Multiply	.\Computation_Utility.cpp	/^void Matrix_Multiply(double z[3][3],double x[3][3],double y[3][3])$/;"	f
+Matrix_Subtract	.\Computation_Utility.cpp	/^void Matrix_Subtract(double **z,double **x, double **y,int n)$/;"	f
+Matrix_Subtract	.\Computation_Utility.cpp	/^void Matrix_Subtract(double z[3][3],double x[3][3], double y[3][3])$/;"	f
+Matrix_Trans	.\Computation_Utility.cpp	/^void Matrix_Trans(double **a,double **b,int n)$/;"	f
+Matrix_Trans	.\Computation_Utility.cpp	/^void Matrix_Trans(double a[3][3],double b[3][3])$/;"	f
+Matrix_Unit	.\Computation_Utility.cpp	/^void Matrix_Unit(double **a,int n1,int n2,double unit)$/;"	f
+Matrix_Unit	.\Computation_Utility.cpp	/^void Matrix_Unit(double a[3][3],double unit)$/;"	f
+ND_Gaussian_Train	.\Computation_Utility.cpp	/^void ND_Gaussian_Train(double **input,int num,int dim,double *mean,double **vari,double *wei)$/;"	f
+NULL	.\Computation_Utility.h	38;"	d
+NewArray2D	.\Computation_Utility.h	/^inline void NewArray2D(A *** warray,int Narray1,int Narray2)$/;"	f
+NewArray3D	.\Computation_Utility.h	/^inline void NewArray3D(A **** warray,int Narray1,int Narray2,int Narray3)$/;"	f
+NewArray4D	.\Computation_Utility.h	/^inline void NewArray4D(A ***** warray,int Narray1,int Narray2,int Narray3,int Narray4)$/;"	f
+PARAMETER_ERROR	.\Computation_Utility.h	26;"	d
+PDB_To_XYZ_NoChain	.\IS_Score_Calc.cpp	/^int PDB_To_XYZ_NoChain(string &pdb,char *ami,XYZ *xyz)$/;"	f
+PREMATURE_ERROR	.\Computation_Utility.h	23;"	d
+RANGEOVER_ERROR	.\Computation_Utility.h	19;"	d
+RESIDOVER_ERROR	.\Computation_Utility.h	22;"	d
+SIGN	.\Computation_Utility.h	/^inline const A SIGN(const A &a, const A &b)$/;"	f
+STR_TRANS_ERROR	.\Computation_Utility.h	16;"	d
+SWAP	.\Computation_Utility.h	/^inline void SWAP(A &a, A &b)$/;"	f
+String_Process_Line_Dou	.\Computation_Utility.cpp	/^int String_Process_Line_Dou(string &line,char sepa,double *out)$/;"	f
+String_Process_Line_Int	.\Computation_Utility.cpp	/^int String_Process_Line_Int(string &line,char sepa,int *out)$/;"	f
+String_Process_Line_Str	.\Computation_Utility.cpp	/^int String_Process_Line_Str(string &line,char sepa,char **out)$/;"	f
+TMS_maximal	.\TM_score.h	/^	int TMS_maximal;$/;"	m	class:TM_score
+TM_CACHE	.\TM_score.h	/^	int TM_CACHE;    \/\/default no cache$/;"	m	class:TM_score
+TM_CALC	.\TM_score.h	/^	int TM_CALC;      \/\/if d0, d8 has been calced, then omit$/;"	m	class:TM_score
+TM_score	.\TM_score.cpp	/^TM_score::TM_score(int num)$/;"	f	class:TM_score
+TM_score	.\TM_score.h	/^class TM_score : virtual public Kabsch$/;"	c
+TMs_Cache_Point	.\TM_score.cpp	/^void TM_score::TMs_Cache_Point(XYZ *mol,int index,XYZ &ret_point,double *rotmat)$/;"	f	class:TM_score
+TMs_cache	.\TM_score.h	/^	int *TMs_cache;  \/\/cache index for mol1$/;"	m	class:TM_score
+TMs_molt	.\TM_score.h	/^	XYZ *TMs_molt;   \/\/cache point for mol1$/;"	m	class:TM_score
+UNEXPECT_ERROR	.\Computation_Utility.h	28;"	d
+UNSUPPORT_ERROR	.\Computation_Utility.h	27;"	d
+UPSIDDOWN_ERROR	.\Computation_Utility.h	20;"	d
+USER_TYPE_ERROR	.\Computation_Utility.h	25;"	d
+Universal_Rotation	.\Computation_Utility.cpp	/^void Universal_Rotation(double Axis[3],double Phi,double R[3][3])$/;"	f
+Using_Qcprot_Or_Not	.\Kabsch.h	/^	int Using_Qcprot_Or_Not; \/\/using qcprot or not \/\/default: 1 (yes!)$/;"	m	class:Kabsch
+Vector_Addition	.\Computation_Utility.cpp	/^void Vector_Addition(double *z,double *x, double *y,int n)$/;"	f
+Vector_Angle	.\Computation_Utility.cpp	/^double Vector_Angle(double *a,double *b,int n)$/;"	f
+Vector_Dot	.\Computation_Utility.cpp	/^void Vector_Dot(double *z,double a,double *y,int n)$/;"	f
+Vector_Multiply	.\Computation_Utility.cpp	/^void Vector_Multiply(double *z,double **x, double *y,int n)$/;"	f
+Vector_Multiply	.\Computation_Utility.cpp	/^void Vector_Multiply(double z[3],double x[3][3], double y[3])$/;"	f
+Vector_Multiply_Trans	.\Computation_Utility.cpp	/^void Vector_Multiply_Trans(double *z,double **x, double *y,int n)$/;"	f
+Vector_Multiply_Trans	.\Computation_Utility.cpp	/^void Vector_Multiply_Trans(double z[3],double x[3][3], double y[3])$/;"	f
+Vector_Normalize	.\Computation_Utility.cpp	/^double Vector_Normalize(double *a,int n)$/;"	f
+Vector_Subtract	.\Computation_Utility.cpp	/^void Vector_Subtract(double *z,double *x, double *y,int n)$/;"	f
+Vector_Unit	.\Computation_Utility.cpp	/^void Vector_Unit(double *a,int n,double unit)$/;"	f
+WWW_Three2One_III	.\IS_Score_Calc.cpp	/^char WWW_Three2One_III(const char *input)$/;"	f
+X	.\XYZ.h	/^	double X, Y, Z;$/;"	m	class:XYZ
+XYZ	.\XYZ.cpp	/^XYZ::XYZ(const XYZ & xyz)$/;"	f	class:XYZ
+XYZ	.\XYZ.cpp	/^XYZ::XYZ(double w)$/;"	f	class:XYZ
+XYZ	.\XYZ.cpp	/^XYZ::XYZ(double x, double y, double z)$/;"	f	class:XYZ
+XYZ	.\XYZ.cpp	/^XYZ::XYZ(void)$/;"	f	class:XYZ
+XYZ	.\XYZ.h	/^class XYZ$/;"	c
+XYZ2	.\XYZ.cpp	/^void XYZ::XYZ2()$/;"	f	class:XYZ
+Y	.\XYZ.h	/^	double X, Y, Z;$/;"	m	class:XYZ
+Z	.\XYZ.h	/^	double X, Y, Z;$/;"	m	class:XYZ
+ali_orin	.\TM_score.h	/^	int ali_orin;     \/\/length of alignment$/;"	m	class:TM_score
+calc_bend_angle	.\XYZ.cpp	/^double XYZ::calc_bend_angle(const XYZ & xyz) const $/;"	f	class:XYZ
+calc_dist	.\Kabsch.cpp	/^double Kabsch::calc_dist(XYZ *molA,XYZ *molB,int nAtom)$/;"	f	class:Kabsch
+calc_dist	.\Kabsch.cpp	/^double Kabsch::calc_dist(XYZ *molA,XYZ *molB,int nAtom,double *rotmat_)$/;"	f	class:Kabsch
+calc_tort_angle	.\XYZ.cpp	/^double XYZ::calc_tort_angle(const XYZ & b, const XYZ & c) const$/;"	f	class:XYZ
+cbrt	.\Computation_Utility.cpp	/^double cbrt(double x)$/;"	f
+coordinate_seperation	.\XYZ.cpp	/^double XYZ::coordinate_seperation(XYZ & xyz)  const $/;"	f	class:XYZ
+cross	.\Computation_Utility.cpp	/^void cross(double *z,double *x,double *y,int n)$/;"	f
+cross	.\Computation_Utility.cpp	/^void cross(double z[3],double x[3],double y[3])$/;"	f
+cross_product	.\XYZ.cpp	/^void XYZ::cross_product(const XYZ & xyz, XYZ & ans) const$/;"	f	class:XYZ
+cubic_roots	.\Kabsch.cpp	/^int Kabsch::cubic_roots(double c[4],double s[3])$/;"	f	class:Kabsch
+d0	.\TM_score.h	/^	double d0;        \/\/core of TMscore$/;"	m	class:TM_score
+d00	.\TM_score.h	/^	double d00;       \/\/d0 with bound (4.5-8.0)$/;"	m	class:TM_score
+d0_input	.\TM_score.h	/^	double d0_input;  \/\/input d0$/;"	m	class:TM_score
+d0_min	.\TM_score.h	/^	double d0_min;    \/\/default: 0.5$/;"	m	class:TM_score
+d0_serch	.\TM_score.h	/^	double d0_serch;  \/\/serch d0$/;"	m	class:TM_score
+d8	.\TM_score.h	/^	double d8;        \/\/a larger cutoff$/;"	m	class:TM_score
+d8_input	.\TM_score.h	/^	double d8_input;  \/\/input d8$/;"	m	class:TM_score
+distance	.\XYZ.cpp	/^double XYZ::distance(const XYZ & xyz) const$/;"	f	class:XYZ
+distance_square	.\XYZ.cpp	/^double XYZ::distance_square(const XYZ & xyz)  const $/;"	f	class:XYZ
+dot	.\Computation_Utility.cpp	/^double dot(double *x,double *y,int n)$/;"	f
+dot	.\Computation_Utility.cpp	/^double dot(double x[3],double y[3])$/;"	f
+double2xyz	.\XYZ.cpp	/^void XYZ::double2xyz(double t[3])$/;"	f	class:XYZ
+eigen_values	.\Kabsch.cpp	/^int Kabsch::eigen_values(double m[3][3],double values[3],double vectors[3][3])$/;"	f	class:Kabsch
+eigen_values_comp	.\Kabsch.cpp	/^int Kabsch::eigen_values_comp(double r[3][3],double m[3][3],double values[3],double *rotmat_)$/;"	f	class:Kabsch
+eigen_values_simp	.\Kabsch.cpp	/^int Kabsch::eigen_values_simp(double m[3][3],double values[3])$/;"	f	class:Kabsch
+finmat	.\TM_score.h	/^	double *finmat;   \/\/optimized rotmat$/;"	m	class:TM_score
+getBaseName	.\Computation_Utility.cpp	/^void getBaseName(string &in,string &out,char slash,char dot)$/;"	f
+getRootName	.\Computation_Utility.cpp	/^void getRootName(string &in,string &out,char slash)$/;"	f
+getline_end	.\Computation_Utility.cpp	/^void getline_end(string &input,char kill)$/;"	f
+iL0_simp	.\TM_score.h	/^	int *iL0_simp;    \/\/for simplication search$/;"	m	class:TM_score
+i_ali	.\TM_score.h	/^	int *i_ali;       \/\/temporary ali$/;"	m	class:TM_score
+int2str	.\Computation_Utility.cpp	/^string int2str(int num)$/;"	f
+k_ali	.\TM_score.h	/^	int *k_ali;       \/\/iteration recored$/;"	m	class:TM_score
+k_alin	.\TM_score.h	/^	int k_alin;       \/\/iteration maximal length$/;"	m	class:TM_score
+k_fin	.\TM_score.h	/^	int *k_fin;       \/\/iteration maximal$/;"	m	class:TM_score
+kabsch	.\Kabsch.cpp	/^double Kabsch::kabsch(XYZ *strBuf1,XYZ *strBuf2,int lali,double *rotmat_) $/;"	f	class:Kabsch
+kabsch_a	.\Kabsch.h	/^	double kabsch_a[3][3];$/;"	m	class:Kabsch
+kabsch_atrans	.\Kabsch.h	/^	double kabsch_atrans[3][3];	$/;"	m	class:Kabsch
+kabsch_b	.\Kabsch.h	/^	double kabsch_b[3][3];$/;"	m	class:Kabsch
+kabsch_base	.\Kabsch.cpp	/^double Kabsch::kabsch_base(double r[3][3],XYZ xc_,XYZ yc_,double *rotmat_)$/;"	f	class:Kabsch
+kabsch_c	.\Kabsch.h	/^	double kabsch_c[4];$/;"	m	class:Kabsch
+kabsch_elong	.\Kabsch.cpp	/^double Kabsch::kabsch_elong(XYZ p1,XYZ p2,double *rotmat_)$/;"	f	class:Kabsch
+kabsch_main	.\Kabsch.cpp	/^double Kabsch::kabsch_main(double *rotmat_)$/;"	f	class:Kabsch
+kabsch_mu	.\Kabsch.h	/^	double kabsch_mu[3];$/;"	m	class:Kabsch
+kabsch_r	.\Kabsch.h	/^	double kabsch_r[3][3];	$/;"	m	class:Kabsch
+kabsch_roots	.\Kabsch.h	/^	double kabsch_roots[3];$/;"	m	class:Kabsch
+kabsch_rot	.\Kabsch.h	/^	double kabsch_rot[4][3];$/;"	m	class:Kabsch
+kabsch_rr	.\Kabsch.h	/^	double kabsch_rr[3][3];$/;"	m	class:Kabsch
+kabsch_rtrans	.\Kabsch.h	/^	double kabsch_rtrans[3][3];$/;"	m	class:Kabsch
+kabsch_shrink	.\Kabsch.cpp	/^double Kabsch::kabsch_shrink(XYZ p1,XYZ p2,double *rotmat_)$/;"	f	class:Kabsch
+kabsch_tt	.\Kabsch.h	/^	double kabsch_tt[3];$/;"	m	class:Kabsch
+kabsch_u	.\Kabsch.h	/^	double kabsch_u[3][3];$/;"	m	class:Kabsch
+kabsch_xc	.\Kabsch.h	/^	double kabsch_xc[3];$/;"	m	class:Kabsch
+kabsch_yc	.\Kabsch.h	/^	double kabsch_yc[3];$/;"	m	class:Kabsch
+kabsch_yy	.\Kabsch.h	/^	double kabsch_yy[3];$/;"	m	class:Kabsch
+lessrange_debug_test	.\Computation_Utility.cpp	/^void lessrange_debug_test(int cur,int limit)$/;"	f
+limit	.\Computation_Utility.cpp	/^double limit(double x,double low,double high)$/;"	f
+log_add	.\Computation_Utility.cpp	/^double log_add(double x, double y)$/;"	f
+log_add	.\Computation_Utility.cpp	/^double log_add(double x1, double x2, double x3)$/;"	f
+log_add	.\Computation_Utility.cpp	/^double log_add(double x1, double x2, double x3, double x4, double x5)$/;"	f
+main	.\IS_Score_Calc.cpp	/^int main(int argc,char **argv)$/;"	f
+mixed_product	.\XYZ.cpp	/^double XYZ::mixed_product(const XYZ & b, const XYZ & c) const$/;"	f	class:XYZ
+n_cut	.\TM_score.h	/^	int n_cut;        \/\/temporary length$/;"	m	class:TM_score
+norm	.\XYZ.cpp	/^double XYZ::norm() const$/;"	f	class:XYZ
+operator *	.\XYZ.cpp	/^XYZ XYZ::operator *(double i) const$/;"	f	class:XYZ
+operator *=	.\XYZ.cpp	/^void XYZ::operator *=(double i)$/;"	f	class:XYZ
+operator +	.\XYZ.cpp	/^XYZ XYZ::operator +(const XYZ & xyz) const$/;"	f	class:XYZ
+operator +=	.\XYZ.cpp	/^void XYZ::operator +=(const XYZ & xyz)$/;"	f	class:XYZ
+operator -	.\XYZ.cpp	/^XYZ XYZ::operator -(const XYZ & xyz) const$/;"	f	class:XYZ
+operator -=	.\XYZ.cpp	/^void XYZ::operator -=(const XYZ & xyz)$/;"	f	class:XYZ
+operator /	.\XYZ.cpp	/^XYZ XYZ::operator \/(double i) const$/;"	f	class:XYZ
+operator /=	.\XYZ.cpp	/^void XYZ::operator \/=(double i)$/;"	f	class:XYZ
+operator =	.\Kabsch.cpp	/^Kabsch & Kabsch::operator =(const Kabsch & kabsch) $/;"	f	class:Kabsch
+operator =	.\XYZ.cpp	/^XYZ & XYZ::operator =(const XYZ & xyz)$/;"	f	class:XYZ
+operator =	.\XYZ.cpp	/^void XYZ::operator =(double i)$/;"	f	class:XYZ
+ori1	.\TM_score.h	/^	XYZ *ori1,*ori2;  \/\/original input, mol2 is fixed!!$/;"	m	class:TM_score
+ori2	.\TM_score.h	/^	XYZ *ori1,*ori2;  \/\/original input, mol2 is fixed!!$/;"	m	class:TM_score
+overlap_factor	.\IS_score.h	/^	vector < double > overlap_factor;  \/\/length should be ali_orin$/;"	m	class:IS_score
+overrange_debug_test	.\Computation_Utility.cpp	/^void overrange_debug_test(int cur,int limit)$/;"	f
+point_product	.\XYZ.cpp	/^double XYZ::point_product(const XYZ & xyz) const$/;"	f	class:XYZ
+rot_mol	.\Kabsch.cpp	/^void Kabsch::rot_mol(XYZ *m_old,XYZ *m_new,int nAtom,double *rotmat_)$/;"	f	class:Kabsch
+rot_point	.\Kabsch.cpp	/^void Kabsch::rot_point(XYZ p_old,XYZ &p_new,double *rotmat_)$/;"	f	class:Kabsch
+rotmat	.\TM_score.h	/^	double *rotmat;   \/\/temporary rotmat$/;"	m	class:TM_score
+str2dou	.\Computation_Utility.cpp	/^int str2dou(const char *str,double &num,int limit)$/;"	f
+str2int	.\Computation_Utility.cpp	/^int str2int(const char *str,int &num)$/;"	f
+test_X2	.\Kabsch.h	/^	double test_X2,test_Y2;$/;"	m	class:Kabsch
+test_XY	.\Kabsch.h	/^	double test_XY[3][3];$/;"	m	class:Kabsch
+test_Y2	.\Kabsch.h	/^	double test_X2,test_Y2;$/;"	m	class:Kabsch
+test_len	.\Kabsch.h	/^	int test_len;$/;"	m	class:Kabsch
+test_xc	.\Kabsch.h	/^	XYZ test_xc,test_yc;$/;"	m	class:Kabsch
+test_yc	.\Kabsch.h	/^	XYZ test_xc,test_yc;$/;"	m	class:Kabsch
+tmp1	.\TM_score.h	/^	XYZ *tmp1,*tmp2;  \/\/temporary mol$/;"	m	class:TM_score
+tmp2	.\TM_score.h	/^	XYZ *tmp1,*tmp2;  \/\/temporary mol$/;"	m	class:TM_score
+toLowerCase	.\Computation_Utility.cpp	/^void toLowerCase(char *buffer)$/;"	f
+toLowerCase	.\Computation_Utility.cpp	/^void toLowerCase(string &buffer)$/;"	f
+toUpperCase	.\Computation_Utility.cpp	/^void toUpperCase(char *buffer) $/;"	f
+toUpperCase	.\Computation_Utility.cpp	/^void toUpperCase(string &buffer)$/;"	f
+transform	.\XYZ.cpp	/^void XYZ::transform(XYZ & xyz, const double *rotmat)$/;"	f	class:XYZ
+xyz2double	.\XYZ.cpp	/^void XYZ::xyz2double(double t[3]) const $/;"	f	class:XYZ
+~IS_score	.\IS_score.cpp	/^IS_score::~IS_score(void)$/;"	f	class:IS_score
+~Kabsch	.\Kabsch.cpp	/^Kabsch::~Kabsch(void)$/;"	f	class:Kabsch
+~TM_score	.\TM_score.cpp	/^TM_score::~TM_score(void)$/;"	f	class:TM_score
+~XYZ	.\XYZ.cpp	/^XYZ::~XYZ(void)$/;"	f	class:XYZ

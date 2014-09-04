@@ -1,0 +1,44 @@
+# temp files
+*.o
+*.d
+*.swp
+*.log
+
+# texts and executables
+*.txt
+*.exe
+
+# data files
+*.tpl
+*.tgt
+*.fasta
+*.pdb
+*.lst
+*.parsed
+
+# subdirectories
+test/
+
+# documents
+doc/
+!doc/*.tex
+
+# zip files
+*.zip
+*.tar
+
+# model files
+*.model
+
+# scripts
+*.awk
+*.dat
+*.sh
+*.py
+
+# miscs
+isscore_result
+is-score.bat
+tags
+tag
+

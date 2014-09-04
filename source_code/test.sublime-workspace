@@ -1,0 +1,937 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"for",
+				"for	For Loop"
+			],
+			[
+				"resi",
+				"residue_number"
+			],
+			[
+				"le",
+				"length"
+			],
+			[
+				"iAl",
+				"iAlign_Output"
+			],
+			[
+				"iali",
+				"ialign_out"
+			],
+			[
+				"print",
+				"printAlignment"
+			],
+			[
+				"vect",
+				"vector	std::vector"
+			],
+			[
+				"insert",
+				"insert_vector"
+			],
+			[
+				"push",
+				"push_back"
+			],
+			[
+				"file",
+				"filename"
+			],
+			[
+				"inter",
+				"interface2"
+			],
+			[
+				"inte",
+				"interface1"
+			],
+			[
+				"un",
+				"usingt	Using statement (templated)"
+			],
+			[
+				"eff",
+				"effect_mol2"
+			],
+			[
+				"mol",
+				"moln1"
+			],
+			[
+				"inc",
+				"inc	#include \"…\""
+			],
+			[
+				"vec",
+				"vector	std::vector"
+			],
+			[
+				"resid",
+				"residue_index"
+			],
+			[
+				"ef",
+				"effect_mol1"
+			],
+			[
+				"lai",
+				"lali"
+			],
+			[
+				"mo",
+				"mol1"
+			],
+			[
+				"fa",
+				"feature0"
+			],
+			[
+				"tra",
+				"trainDesire"
+			],
+			[
+				"int",
+				"interNum"
+			],
+			[
+				"dru",
+				"drug1"
+			],
+			[
+				"dur",
+				"drug0"
+			],
+			[
+				"read",
+				"readInteractionFile"
+			],
+			[
+				"li",
+				"lineNum"
+			],
+			[
+				"d",
+				"drug1"
+			],
+			[
+				"in",
+				"interNum"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/CrickWu/Desktop/set/DeepAlign_Open_v1.133/source_code/DeepOpen_source/TM_score.cpp",
+			"settings":
+			{
+				"buffer_size": 10394,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "TM_score.cpp",
+			"settings":
+			{
+				"buffer_size": 11087,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include <string>\n#include <cstdlib>\n#include <cstring>\n#include <iostream>\n#include <fstream>\n#include <sstream>\n#include <vector>\n#include <cmath>\n#include <map>\n#include \"IS_score.h\"\n#include \"iAlign_Output.h\"\n\nusing namespace std;\n\n//========== process PDB ============//\nchar WWW_Three2One_III(const char *input)\n{\n	int i;\n	int len;\n	int result;\n	//encoding\n	len=(int)strlen(input);\n	if(len!=3)return 'X';\n	result=0;\n	for(i=0;i<len;i++)result+=(input[i]-'A')*(int)pow(1.0*26,1.0*i);\n	//switch\n	switch(result)\n	{\n		case 286:return 'A';\n		case 4498:return 'R';\n		case 9256:return 'N';\n		case 10608:return 'D';\n		case 12794:return 'C';\n		case 9080:return 'Q';\n		case 13812:return 'E';\n		case 16516:return 'G';\n		case 12383:return 'H';\n		case 2998:return 'I';\n		case 13635:return 'L';\n		case 12803:return 'K';\n		case 12960:return 'M';\n		case 2901:return 'F';\n		case 9921:return 'P';\n		case 11614:return 'S';\n		case 11693:return 'T';\n		case 10601:return 'W';\n		case 12135:return 'Y';\n		case 7457:return 'V';\n		default:return 'X';\n	}\n}\n\n//--------- PDB_To_XYZ ----------//\nint PDB_To_XYZ_NoChain(string &pdb,char * ami,XYZ *xyz)//, std::vector<int> resi_index)\n{\n	//--- list for mapping ---//\n	map<string, int > ws_mapping;\n	map<string, int>::iterator iter;\n	ws_mapping.clear();\n	ifstream fin;\n	string buf,temp,name;\n	//read\n	fin.open(pdb.c_str(), ios::in);\n	if(fin.fail()!=0)\n	{\n		fprintf(stderr,\"pdb_file %s not found!!\\n\",pdb.c_str());\n		return -1;\n	}\n	int len;\n	int count=0;\n	for(;;)\n	{\n		if(!getline(fin,buf,'\\n'))break;\n		len=(int)buf.length();\n		if(len<3)continue;\n		//check TER\n		temp=buf.substr(0,3);\n		if(temp==\"END\")break;\n		//check ATOM\n		if(len<4)continue;\n		temp=buf.substr(0,4);\n		if(temp!=\"ATOM\"&&temp!=\"HETA\")continue;\n		//check CA\n		temp=buf.substr(13,2);\n		if(temp!=\"CA\")continue;\n		//record name\n		name=buf.substr(21,6);\n		iter = ws_mapping.find(name);\n		if(iter != ws_mapping.end())continue;\n		count++;\n		ws_mapping.insert(map < string, int >::value_type(name, count));\n		//record ami\n		temp=buf.substr(17,3);\n		ami[count-1]=WWW_Three2One_III(temp.c_str());\n		//record xyz\n		temp=buf.substr(30,8);\n		xyz[count-1].X=atof(temp.c_str());\n		temp=buf.substr(38,8);\n		xyz[count-1].Y=atof(temp.c_str());\n		temp=buf.substr(46,8);\n		xyz[count-1].Z=atof(temp.c_str());\n\n	}\n	ami[count]='\\0';\n	return count;\n}\n\n//============== load iAlign interface file ============//\n// one example as follows:\n/*\nTotal residue-residue contacts found  :: 20\n ResIndex  NumCont Contact_Residues (starts 1 from the first interface residue)\nRES     1   3   40   41   39\nRES     2   4   41   39   40   24\nRES     3   0\nRES     4   0\nRES     5   1   25\nRES     6   1   41\nRES     7   0\nRES     8   3   40   38   39\nRES     9   3   38   40   39\nRES    10   3   38   39   40\nRES    11   0\nRES    12   1   40\n....\nRES    35   0\nRES    36   0\nRES    37   0\nRES    38   3    8    9   10\nRES    39   5    1    2    8    9   10\nRES    40   6    1    2    8    9   10   12\nRES    41   3    1    2    6\nRES    42   1   13\n*/\n\nint Load_iAlign_Interface_File(string &int_file, vector < vector <int> > &output)\n{\n	ifstream fin;\n	string buf,temp;\n	//read\n	fin.open(int_file.c_str(), ios::in);\n	if(fin.fail()!=0)\n	{\n		fprintf(stderr,\"interface_file %s not found!!\\n\",int_file.c_str());\n		return -1;\n	}\n	output.clear();\n	//skip\n	int found=0;\n	for(;;)\n	{\n		if(!getline(fin,buf,'\\n'))break;\n		istringstream www(buf);\n		www>>temp;\n		if(temp==\"ResIndex\")\n		{\n			found=1;\n			break;\n		}\n	}\n	if(found==0)\n	{\n		fprintf(stderr,\"interface_file %s format bad!!\\n\",int_file.c_str());\n		return -1;\n	}\n	//proc\n	for(;;)\n	{\n		if(!getline(fin,buf,'\\n'))break;\n		istringstream www(buf);\n		vector <int> tmp_rec;\n		int num;\n		www>>temp>>temp>>num;\n		if(num==0)\n		{\n			output.push_back(tmp_rec);\n			continue;\n		}\n		//load\n		int pos;\n		for(;;)\n		{\n			if( ! (www>>pos) )break;\n			pos--;\n			tmp_rec.push_back(pos);\n		}\n		output.push_back(tmp_rec);\n	}\n	//return\n	return (int)output.size();\n}\n\n\n//========= modified main process ===========//\nvoid Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &interface2, vector<pair<int, int> > &alignment)\n{\n	int i;\n	int maxnum=3000;\n	int moln1;\n	int moln2;\n	XYZ *mol1=new XYZ[maxnum];\n	XYZ *mol2=new XYZ[maxnum];\n	char *ami1=new char[maxnum+1];\n	char *ami2=new char[maxnum+1];\n	int retv;\n\n	//load protein 1\n	//-> load pdb\n	retv=PDB_To_XYZ_NoChain(pdb1,ami1,mol1);\n	if(retv<=0)exit(-1);\n	//-> load interface\n	vector < vector <int> > int1;\n	moln1=Load_iAlign_Interface_File(interface1, int1);\n	if(moln1<=0)exit(-1);\n	//-> check length\n	if(retv!=moln1)\n	{\n		fprintf(stderr,\"protein_file_1 (%s,%s) -> pdb_size [%d] not equal to interface_size [%d] !!\\n\",\n			pdb1.c_str(),interface1.c_str(),retv,moln1);\n		exit(-1);\n	}\n\n	//load protein 2\n	//-> load pdb\n	retv=PDB_To_XYZ_NoChain(pdb2,ami2,mol2);\n	if(retv<=0)exit(-1);\n	//-> load interface\n	vector < vector <int> > int2;\n	moln2=Load_iAlign_Interface_File(interface2, int2);\n	if(moln2<=0)exit(-1);\n	//-> check length\n	if(retv!=moln2)\n	{\n		fprintf(stderr,\"protein_file_2 (%s,%s) -> pdb_size [%d] not equal to interface_size [%d] !!\\n\",\n			pdb2.c_str(),interface2.c_str(),retv,moln2);\n		exit(-1);\n	}\n\n	//------- suppose we're working on IS-score, then the size of each input should be EXACTLY the same !! -------//\n	//-> if the alignment is not specified, generate alignment simply as one-to-one correspondence between two lines\n	// and assume them to be of equal length\n	int lali = 0;\n	// flag for whether or not the alignment is initialied for further deletion of arrays\n	bool flag;\n	XYZ *effect_mol1 = new XYZ[maxnum];\n	XYZ *effect_mol2 = new XYZ[maxnum];\n\n	if(alignment.size() == 0) {\n		lali = moln1;\n		alignment.clear();\n		for(i=0;i<lali;i++)\n			alignment.push_back(pair<int,int>(i+1,i+1));\n		// delete dangling pointers\n		delete[] effect_mol1;\n		delete[] effect_mol2;\n\n		effect_mol1 = mol1;\n		effect_mol2 = mol2;\n\n		flag = false;\n	}\n	else {\n		// TODO may be modified to the second chain's length\n		lali = 0;\n\n	// this serves as extracting out the needed chains and \n		for (unsigned i = 0; i < alignment.size(); ++i) {\n			if (alignment[i].first > 0 && alignment[i].second > 0) {\n				effect_mol1[lali] = mol1[alignment[i].first - 1];\n				effect_mol2[lali] = mol2[alignment[i].second - 1];\n				lali++;\n\n				// cout << \"(\" << alignment[i].first - 1 << \" \" << alignment[i].second - 1 << \")\";\n			}\n		}\n\n		flag = true;\n	}\n\n	//-> calculate IS-score \n	IS_score is_score(max(moln1, moln2));\n	// which one should be the valid normalization number ``L_Q'' (query length)\n	is_score.Calc_TM_d0(moln2);\n	vector <double> f_score;\n	is_score.Calc_Overlap_Factor(int1,int2,alignment,f_score);\n\n/*\n//--- test ---//\nfor(int k=0;k<(int)f_score.size();k++)\n{\n	printf(\"%lf %d %d \\n\",f_score[k],int2[k].size(),int1[k].size());\n}\n//--- test ---//over\n*/\n	is_score.overlap_factor=f_score;\n\n	double isscore=is_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,is_score.d0,is_score.d8,0,0)/moln2;\n	// double isscore=is_score.Calc_TM_Score(mol1,mol2,lali,is_score.d0,is_score.d8,0,0)/lali;\n\n\n/*\n//--- test ---//\ndouble rotmat[12];\nfor(int k=0;k<12;k++)rotmat[k]=is_score.finmat[k];\nfor(int k=0;k<(int)f_score.size();k++)\n{\n	XYZ xyz;\n	is_score.rot_point(mol1[k],xyz,rotmat);\n	double dist=xyz.distance(mol2[k]);\n	printf(\"%lf \\n\",dist);\n}\n//--- test ---//over\n*/\n\n	//-> rescale IS-score\n	// double f0=0.14-0.2*pow(1.0*min(moln1, moln2),-0.3);\n	int scale = moln2;\n	double f0=0.18-0.35*pow(1.0*scale,-0.3);\n\n	double finscore=(isscore+f0)/(1.0+f0);\n\n\n//--- test ---//\n	printf(\"length_dep_score=%lf, raw_score=%lf, f0=%lf, d0=%lf, IS-score = %lf , lali = %d \\n\",isscore*moln2,isscore,f0,is_score.d0,finscore,lali);\n//--- test ---//over\n\n\n	//--- delete ---//\n	// if not deleted in previous rounds\n	if (flag) {\n		delete[] effect_mol1;\n		delete[] effect_mol2;\n	}\n\n	delete [] mol1;\n	delete [] mol2;\n	delete [] ami1;\n	delete [] ami2;\n}\n//default setting with no alignment\nvoid Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &interface2) {\n	vector<pair<int, int> > empty_vector;\n	empty_vector.clear();\n	Calc_IS_Score(pdb1, interface1, pdb2, interface2, empty_vector);\n}\n\n// void Parse_iAlign_File(string filename, std::vector<pair<int, int> > &alignment;) {\n\n// }\n\n//---------- main ----------//\nint main(int argc,char **argv)\n{\n	//---- Calc_IS_Score ----//\n	{\n		if(argc<6)\n		{\n			fprintf(stderr,\"Calc_IS_Score <pdb1> <interface1> <pdb2> <interface2> <ialign_output_file>\\n\");\n			exit(-1);\n		}\n		string pdb1=argv[1];\n		string interface1=argv[2];\n		string pdb2=argv[3];\n		string interface2=argv[4];\n		string ialign_out = argv[5];\n\n		iAlign_Output ia;\n		ia.parsePDB(pdb1, 0), ia.parsePDB(pdb2, 1);\n		// note: that parseFile() function has to be written after parsePDB functions\n		// since the alignment need information from pdb files (from Residue numbers to indexes in the contact files)\n		ia.parseFile(ialign_out);\n\n		//process\n\n		// this function is the extension of original Calc_IS_Score\n		Calc_IS_Score(pdb1, interface1, pdb2, interface2, ia.alignment);\n		// this function assumes that the alignment is one-to-one\n		// Calc_IS_Score(pdb1, interface1, pdb2, interface2);\n\n		// cout << ia.alignment.size() << endl;\n		// ia.outputData();\n\n		//exit\n		exit(0);\n	}\n}\n",
+			"file": "IS_Score_Calc.cpp",
+			"file_size": 9199,
+			"file_write_time": 130543202603913283,
+			"settings":
+			{
+				"buffer_size": 9199,
+				"line_ending": "Unix",
+				"scratch": true
+			}
+		},
+		{
+			"file": "Int_score.cpp",
+			"settings":
+			{
+				"buffer_size": 1871,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Java/JavaC.sublime-build",
+	"command_palette":
+	{
+		"height": 375.0,
+		"selected_items":
+		[
+			[
+				"tag",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"add",
+				"Project: Add Folder"
+			],
+			[
+				":w",
+				":w - Save"
+			],
+			[
+				"iden",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"id",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"ident",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"prv",
+				"PackageResourceViewer: Open Resource"
+			],
+			[
+				"add fo",
+				"Project: Add Folder"
+			],
+			[
+				"prv ",
+				"PackageResourceViewer: Open Resource"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Snippet: vec",
+				"Snippet: Clang version >= check"
+			],
+			[
+				"key",
+				"Preferences: Key Bindings - User"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"user ",
+				"Preferences: Settings - User"
+			],
+			[
+				"snippet:",
+				"Snippet: if(…) else"
+			],
+			[
+				"Snippet: for",
+				"Snippet: For Loop"
+			],
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"c",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"project",
+				"Project: Add Folder"
+			],
+			[
+				"inden",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				":comp",
+				"Tasks: Complete"
+			],
+			[
+				":0",
+				":0 - BOF"
+			],
+			[
+				":",
+				":$ - EOF"
+			],
+			[
+				":!",
+				"Snippet: #!/usr/bin/env"
+			],
+			[
+				"vim",
+				"View: Toggle Menu"
+			],
+			[
+				"pcu",
+				"Package Control: Upgrade Package"
+			]
+		],
+		"width": 450.0
+	},
+	"console":
+	{
+		"height": 120.0,
+		"history":
+		[
+			"ls",
+			"dir(sublime)",
+			"dir()",
+			"dir",
+			"help(help)",
+			"help(list)",
+			"help",
+			"help()",
+			"lsit()",
+			"list",
+			"l",
+			"list"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/CrickWu/Desktop/IS_score_crick/source_code/IS_Score_Calc.cpp",
+		"/C/Users/CrickWu/Desktop/set/DeepAlign_Open_v1.133/source_code/DeepOpen_source/TM_align.cpp",
+		"/C/Users/CrickWu/Desktop/set/DeepAlign_Open_v1.133/source_code/DeepOpen_source/TM_score.h",
+		"/C/Users/CrickWu/Desktop/set/DeepAlign_Open_v1.133/source_code/DeepOpen_source/TM_align.h",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/source_code/iAlign_Output.h",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/source_code/iAlign_Output.cpp",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/source_code/TM_score.cpp",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/source_code/IS_score.cpp",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/test/test.cpp",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/test/iAlign_Output.h",
+		"/C/Users/CrickWu/Desktop/IS_score_crick/test/iAlign_Output.cpp",
+		"/D/Program Files/Sublime_Text3/Data/Packages/C++/030-for-int-loop-(fori).sublime-snippet",
+		"/D/Program Files/Sublime_Text3/Data/Packages/User/Default (Windows).sublime-keymap",
+		"/D/Program Files/Sublime_Text3/Data/Packages/C++/std-vector-(v).sublime-snippet",
+		"/D/Program Files/Sublime_Text3/Data/Packages/User/pair.sublime-snippet",
+		"/D/Program Files/Sublime_Text3/Data/Packages/C++/class-..-(class).sublime-snippet",
+		"/D/Program Files/Sublime_Text3/Data/Packages/User/Preferences.sublime-settings",
+		"/D/Program Files/Sublime_Text3/Data/Packages/C++/if-..-(if).sublime-snippet",
+		"/D/Program Files/Sublime_Text3/Data/Installed Packages/C++ Snippets.sublime-package",
+		"/C/Users/CrickWu/AppData/Roaming/Sublime Text 3/Packages/User/C++.sublime-package",
+		"/D/Program Files/Sublime_Text3/Data/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/CrickWu/Desktop/tmp/Num.java",
+		"/C/Users/CrickWu/Desktop/leetcode/sort-list.py",
+		"/C/Users/CrickWu/Desktop/DCDB2_plaintxt/Predict.java",
+		"/C/Users/CrickWu/Desktop/jarbm/jaRBM/drug/CRBM.java",
+		"/C/Users/CrickWu/Desktop/infotest/myClassLoader.java",
+		"/C/Users/CrickWu/Desktop/infotest/infotest.java",
+		"/C/Users/CrickWu/Desktop/infotest/[path",
+		"/C/Users/CrickWu/Desktop/infotest/[dir",
+		"/C/Users/CrickWu/Desktop/src/Lib/ResultsProcessing/SVMResultsList.java",
+		"/C/Users/CrickWu/Desktop/problem.txt",
+		"/C/Users/CrickWu/Desktop/problem (2).txt",
+		"/D/Program Files/Sublime_Text3/Data/Packages/User/JSON.sublime-settings",
+		"/F/Desktop/固定IP.bat",
+		"/F/Desktop/自动获取.bat",
+		"/F/Desktop/新建文本文档.txt",
+		"/E/remark_list.todo",
+		"/E/动态反馈/dyndoc/测试代码/Dex/src/com/test/dex/main.java",
+		"/F/Desktop/SolidPDFTools/!)使用必读.txt",
+		"/I/Wandoujia_apk/Gexin_android_2.0/smali/com/gexin/im/SmsReceiver.smali",
+		"/L/documents/苏菲的世界.txt",
+		"/L/documents/荆棘鸟.txt",
+		"/F/Desktop/苏菲的世界.txt",
+		"/F/Desktop/荆棘鸟.txt",
+		"/L/documents/My Clippings.txt",
+		"/E/Android QEMU FAST PIPES",
+		"/H/Workdata/linux命令.txt",
+		"/E/动态反馈/dyndoc/测试代码/Http2/src/com/example/http2/TestActivity.java",
+		"/E/动态反馈/dyndoc/测试代码/Http/src/com/example/http/TestActivity.java",
+		"/E/Userdata/linux集锦",
+		"/H/Workdata/Android emulator Record.txt",
+		"/H/Workdata/Android4.0.3编译.txt",
+		"/H/Workdata/AndroidMK.txt",
+		"/H/Workdata/Android emulator Param.txt",
+		"/H/Workdata/adb详细记录.txt",
+		"/F/Desktop/Koreader安装/说明1 kpw越狱教程翻译版本.txt",
+		"/F/Desktop/E0549D1F220DDC692B97E55C1F4D22C9.0E78C845.dyn",
+		"/F/Desktop/E0549D1F220DDC692B97E55C1F4D22C9.0E78C845.avml",
+		"/J/0Android_Dyn/SDK中文短信/MyFakeSMS/src/net/android/myfakesms/MyFakeSMS.java",
+		"/E/动态反馈/dyndoc/测试代码/ShortCut/src/com/example/shortcut/TestActivity.java",
+		"/F/Desktop/ADL_Dyn.sh",
+		"/F/Desktop/monitorv1/AndroidManifest.xml",
+		"/F/Desktop/ADL4.0.3.0025/升级说明.TODO",
+		"/F/Desktop/ADL4.0.3.0024/升级说明.TODO",
+		"/H/Workdata/Android_src4.0/dalvik/vm/native/dalvik_system_VMStack.cpp",
+		"/E/动态反馈/dyndoc/测试代码/call/src/com/example/call/TestActivity.java",
+		"/F/Desktop/2013迅雷VIP6/说明.txt",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/LaunchDemo/Resource.xml",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/LaunchDemo/Data/Script/frame/frame_sprite.xml",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/LaunchDemo/Data/Script/frame/windowback.xml",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/LaunchDemo/Data/Script/frame/frame_title.xml",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/LaunchDemo/Data/Script/frame/frame_button_close.xml",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/LaunchDemo/Data/Script/frame/frame_background.xml",
+		"/F/Desktop/binggameframework/BingGameFramework1.0.1/更新日志.txt",
+		"/F/Desktop/汉诺塔1.c",
+		"/H/Workdata/CMics_ADL/ContentResolver.java",
+		"/H/Workdata/CMics_ADL/TelephonyManager.java",
+		"/H/Workdata/Android_src4.0/dalvik/vm/Exception.cpp",
+		"/H/Workdata/CMics_ADL/SmsManager.java",
+		"/H/Workdata/Android_src4.0/frameworks/base/services/java/com/android/server/MountService.java",
+		"/H/Workdata/Android_src4.0/frameworks/base/core/java/android/os/StrictMode.java",
+		"/H/Workdata/Android_src4.0/frameworks/base/tools/preload/20100223.compiled",
+		"/E/动态反馈/dyndoc/测试代码/GetSms/src/com/example/getsms/MyService.java",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/AndroidManifest.xml",
+		"/F/Desktop/00196D4CE5FD8E154127EDA898B933D1/AndroidManifest.xml",
+		"/D/152740124",
+		"/F/Desktop/升级说明.TODO",
+		"/E/动态反馈/dyndoc/测试代码/SMSAbort/src/com/example/smsabort/SmsReceiver.java",
+		"/E/动态反馈/dyndoc/测试代码/Notification/src/com/example/notification/TestActivity.java",
+		"/E/动态反馈/dyndoc/测试代码/Notification/AndroidManifest.xml",
+		"/I/Wandoujia_apk/Apps/ES文件浏览器V1.6.1.7(Android1.6+)/AndroidManifest.xml",
+		"/I/Wandoujia_apk/Gexin_android_2.0/AndroidManifest.xml",
+		"/I/Wandoujia_apk/Apps/ES文件浏览器V1.6.1.7(Android1.6+)/smali/com/google/ads/util/AdUtil$UserActivityReceiver.smali",
+		"/I/Wandoujia_apk/Apps/ES文件浏览器V1.6.1.7(Android1.6+)/smali/com/estrongs/android/pop/scanner/WifiStateReceiver.smali",
+		"/I/Wandoujia_apk/RootExplorer/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/SMSAbort/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/ShortCut/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/UnInstall/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/Http/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/GetSms/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/Buchong/AndroidManifest.xml",
+		"/E/动态反馈/dyndoc/测试代码/call/AndroidManifest.xml",
+		"/H/Workdata/Android_src2.3.1/frameworks/base/core/java/android/content/pm/IPackageManager.aidl",
+		"/H/Workdata/Android_src4.0/frameworks/base/core/java/android/content/pm/IPackageManager.aidl",
+		"/F/Desktop/smsbroad_log",
+		"/H/Workdata/Android_src4.0/frameworks/support/v13/java/android/support/v13/app/FragmentPagerAdapter.java",
+		"/H/Workdata/CMics_ADL/BaseDexClassLoader.java",
+		"/H/Workdata/Android_src4.0/frameworks/base/core/java/android/content/BroadcastReceiver.java",
+		"/E/Userdata/GDI和GDI+对象的互相转换.txt",
+		"/H/Workdata/Android_src4.0/frameworks/base/core/java/android/app/ActivityManagerNative.java",
+		"/H/Workdata/Android_src4.0/frameworks/base/services/java/com/android/server/am/ActivityManagerService.java",
+		"/E/Userdata/care.txt",
+		"/F/Desktop/毛泽东私人医生的回忆.txt",
+		"/F/Desktop/DroidBox/scripts/utils.py",
+		"/F/Desktop/DroidBox/scripts/bytecode.py",
+		"/F/Desktop/DroidBox/scripts/monkeyrunner.py",
+		"/F/Desktop/DroidBox/scripts/droidbox.py",
+		"/E/动态反馈/dyndoc/测试代码/GetSms/src/com/example/getsms/TestActivity.java",
+		"/E/Userdata/dbank_track.txt",
+		"/F/TEMP/User/Rar$DIa0.478/解压密码+协议.txt",
+		"/H/remark_list.todo",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/smali/com/mobi/core/angel/Angel.smali",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/smali/cn/feejar/JHelp_Http.smali",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/smali/com/moon/player10/f.smali",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/smali/com/moon/player10/s.smali",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/smali/cn/feejar/JHelp_ConnectBYAP.smali",
+		"/F/Desktop/A29F4B5E54E86B6B96C1E07A157E6E68/smali/cn/feejar/FeeSmsService.smali",
+		"/E/SKY/SkyDrive/文档/个人笔记.url"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"min",
+			"Simple",
+			"TM_CACHE",
+			"TM_GAP_TYPE",
+			"TM_DP_best",
+			"TM_GAP_OPEN",
+			"the",
+			"f0",
+			"cout",
+			"index",
+			"TMS_maximal",
+			"af",
+			"cout",
+			"6",
+			"number_to_index_map",
+			"parse",
+			"cout",
+			"reis",
+			"residue_index",
+			"ami2",
+			"here",
+			"iter",
+			"this",
+			"cout",
+			"filename",
+			"index",
+			"append",
+			"mol1",
+			"T_Len",
+			"\n	",
+			"T_Min",
+			"LineLayer",
+			"interNum",
+			"ClassLoader",
+			"am",
+			"EmulateBroastcast",
+			"_data.writeString(number);",
+			"itelephony;",
+			"getstackclass2",
+			"activitymanagerservice",
+			"am.processrecord",
+			"android.content.am.proces",
+			"start_new",
+			"LAUNCHER",
+			"launch",
+			"permission",
+			"provider",
+			"conten",
+			"apn",
+			"apnsetting",
+			"method",
+			"http",
+			"---"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"residue_number",
+			"push_back",
+			"LinearLayer"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/CrickWu/Desktop/set/DeepAlign_Open_v1.133/source_code/DeepOpen_source/TM_score.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10394,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4811,
+								4817
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close"
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5558.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "TM_score.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11087,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8785,
+								8785
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close"
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7596.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "IS_Score_Calc.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9199,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7339,
+								7342
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close"
+							],
+							"in_converting": true,
+							"origin_encoding": "GBK",
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5152.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Int_score.cpp",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 1871,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1705,
+								1705
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close"
+							],
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 702.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 36.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"output.exec":
+	{
+		"height": 116.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 116.0
+	},
+	"project": "test.sublime-project",
+	"replace":
+	{
+		"height": 68.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"calc",
+				"C:\\Users\\CrickWu\\Desktop\\IS_score_crick\\Calc_IS_Score"
+			],
+			[
+				"ipackagemanager",
+				"base\\core\\java\\android\\content\\pm\\IPackageManager.aidl"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 375.0,
+		"selected_items":
+		[
+			[
+				"broadcastre",
+				"BroadcastReceiver"
+			],
+			[
+				"",
+				"1500"
+			],
+			[
+				"net",
+				"NetworkHandler"
+			]
+		],
+		"width": 378.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 190.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
