@@ -39,6 +39,8 @@ doc/
 # miscs
 isscore_result
 is-score.bat
-tags
 tag
+tags
+*.tags*
+*.sublime*
 

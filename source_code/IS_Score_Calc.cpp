@@ -8,9 +8,23 @@
 #include <cmath>
 #include <map>
 #include "IS_score.h"
+#include "Int_score.h"
 #include "iAlign_Output.h"
 
 using namespace std;
+
+// tools for test
+void printContactMap(const vector<vector<int> > &map) {
+	for (unsigned i = 0; i < map.size(); ++i)
+	{
+		cout << i << ": ";
+		for (unsigned j = 0; j < map[i].size(); ++j)
+		{
+			cout << map[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
 
 //========== process PDB ============//
 char WWW_Three2One_III(const char *input)
@@ -324,6 +338,17 @@ for(int k=0;k<(int)f_score.size();k++)
 
 	// here starts the scoring for my interface scoring function
 	vector<vector<int > > contact_map;
+	Int_score int_score(max(moln1, moln2));
+	int_score.Calc_TM_d0(moln2);
+	int_score.Calc_Overlap_Factor(int1,int2,alignment,int_score.overlap_factor);
+
+	int_score.Calc_Contact_Map(int1, int_score.contact_map[0]);
+	int_score.Calc_Contact_Map(int2, int_score.contact_map[1]);
+	// printContactMap(int1);
+	// printContactMap(contact_map); 
+	int_score.Calc_BLOSUM_Matrix(ami1, ami2, moln1, moln2, int_score.blos);
+	double intscore=int_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,int_score.d0,int_score.d8,0,0)/moln2;
+	cout << "intscore: " << intscore << endl;
 
 
 	//--- delete ---//

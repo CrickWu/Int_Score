@@ -4,6 +4,8 @@
 Int_score::Int_score(int num)
 :TM_score(num)
 {
+	// default value shows that the complex a dimer
+	contact_map.resize(2);
 }
 Int_score::~Int_score(void)
 {
@@ -13,7 +15,7 @@ Int_score::~Int_score(void)
 //--------- Calc_Overlap_Factor -------//
 //-> note: the size of in1 and in2 could NOT be identical !!
 //   actually, they are moln1 and moln2, according to the alignment.
-void Int_score::Calc_Overlap_Factor_and_Contact_Map(vector < vector <int> > &in1, vector < vector <int> > &in2, 
+void Int_score::Calc_Overlap_Factor(vector < vector <int> > &in1, vector < vector <int> > &in2, 
 		vector <pair<int,int> > &alignment ,vector < double > &out)
 {
 	int i,j,k;
@@ -68,29 +70,65 @@ void Int_score::Calc_Overlap_Factor_and_Contact_Map(vector < vector <int> > &in1
 			out.push_back(fcol);
 		}
 	}
+}
 
+// calculate the contact map
+void Int_score::Calc_Contact_Map(const vector < vector <int> > &in, vector<vector<int> > &map) {
+	int size = in.size();
+	//map initialization
+	map.resize(size);
+	for (int i = 0; i < size; i++) {
+		map[i].resize(size);
+		map[i].assign(size, 0);
+	}
+
+	// calculate contact map from the linked list
+	for (int i = 0; i < size; i++) {
+		for (unsigned j = 0; j < in[i].size(); j++) {
+			int index[2] = {i, in[i][j]};
+			map[index[0]][index[1]] = 1;
+			map[index[1]][index[0]] = 1;
+		}
+	}
+}
+
+void Int_score::Calc_BLOSUM_Matrix(char const * ami1, char const* ami2, int moln1, int moln2, vector<vector<double> > &blos) {
+// initialize the blosum-related matrix
+	blos.resize(moln1);
+	for (int i = 0; i < moln1; ++i) {
+		blos[i].resize(moln2);
+		blos[i].assign(moln2, 0);
+	}
+
+	for (int i = 0; i < moln1; ++i) {
+		for (int j = 0; j < moln2; ++j) {
+			blos[i][j] = max(1.0, IntConstants::BLOSUM62_Calc(ami1[i], ami2[j]) / 5.0);
+		}
+	}
 }
 
 //--------- Calc_TM_Score_Single -------//
 double Int_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,double d8,
 	int TM8orTM,double *ALLSCO)
 {
-	int i;
-	XYZ temp;
-	double dist2;
+	XYZ tempi, tempj;
+	double dist2i, dist2j;
 	double ori_d;
 	ori_d=d0*d0;
 	//calculate
 	double score=0.0;
-	double factor;
+
 	for (int j = 0; j < lali; ++j)
 	{
-		for(i=0;i<lali;i++)
+		TMs_Cache_Point(mol1,j,tempj,rotmat_);
+		dist2j=mol2[j].distance_square(tempj);
+
+		for(int i=0;i<lali;i++)
 		{
-			TMs_Cache_Point(mol1,i,temp,rotmat_);
-			dist2=mol2[i].distance_square(temp);
-			factor=overlap_factor[i];
-			score+=factor/(1.0+dist2/ori_d);
+			TMs_Cache_Point(mol1,i,tempi,rotmat_);
+			dist2i=mol2[i].distance_square(tempi);
+			// score+=overlap_factor[i]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
+			score+=blos[i][j]*contact_map[0][i][j]*contact_map[1][i][j]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
 		}
 	}
 	return score;
