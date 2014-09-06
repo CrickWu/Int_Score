@@ -152,6 +152,24 @@ tag_21:
 	}
 	if(n_cut<3 && lali>3)
 	{
+		/*
+		cout << n_cut << " " << lali << " " << ori_d0 << endl;
+		for (int j = 0; j < 12; j++)
+			cout << rotmat_[j] << " ";
+		cout << endl;
+
+		for(i=0;i<lali;i++)
+		{
+			// cout << mol1[i].X << "," << mol1[i].Y << "," << mol1[i].Z << "--";
+
+			TMs_Cache_Point(mol1,i,temp,rotmat_);
+			dist2=mol2[i].distance_square(temp);
+			// cout << mol2[i].X << "," << mol2[i].Y << "," << mol2[i].Z << "--" 
+			// << temp.X << "," << temp.Y << "," << temp.Z << " ";
+			cout << dist2 << " ";
+		}
+		cout << endl;
+		*/
 		ori_d0+=0.5;
 		goto tag_21;
 	}
@@ -381,7 +399,7 @@ tag_402:
 	int n_shift;
 	int it;
 	int neq;
-	// cout << "n_init: " << n_init << endl;
+	cout << "n_init: " << n_init << endl;
 	for(i_init=0;i_init<n_init;i_init++)
 	{
 		L_init=L_ini[i_init];
@@ -436,6 +454,7 @@ tag_402:
 		ka=L_init;
 		kabsch(tmp2,tmp1,ka,rotmat);
 		score_max=Calc_TM_Score_Single(ori1,ori2,ali_orin,rotmat,d0_input,d8_input,TM8orTM,ALLSCO);//
+		n_cut=Calc_Small_Dist(ori1,ori2,ali_orin,rotmat,ddd,i_ali);
 */
 
 		
@@ -444,6 +463,7 @@ tag_402:
 			// iL1 = iL
 			iL1=iL0_simp[iL]-1;
 			//get initial superposition -------------------------------->
+			// cout << "L_init: " << L_init << endl;
 			for(i=0;i<L_init;i++)
 			{
 				k=iL1+i;
@@ -471,9 +491,17 @@ tag_402:
 				for(int wwi=0;wwi<8;wwi++)if(MAXSCO[wwi]<ALLSCO[wwi])MAXSCO[wwi]=ALLSCO[wwi];
 			}
 			// additional score //__110230__//over
-            
+
+            //---------------------------------------------------------------------------------------
+
 			//iteration for extending ---------------------------------->
 			ddd=d0_serch+1.0;
+			// cout << "ali_orin: " << ali_orin;
+			// cout << " n_it: " << n_it << endl;
+			//debug
+			// n_it = 1;
+			//remember to delete
+
 			for(it=0;it<n_it;it++)
 			{
 				for(i=0;i<n_cut;i++)
@@ -483,10 +511,57 @@ tag_402:
 					tmp2[i]=ori2[k];
 					k_ali[i]=k;
 				}
+/*
+				if (L_init == 8 && n_it == 1 && n_cut == 6) {
+					cout << "lali: " << lali << endl;
+					cout << "i_ali: ";
+					for (int j = 0; j < n_cut; ++j) {
+						int l = i_ali[j];
+						cout << l << " ";
+						// cout << ori1[l].X << " ";
+					}
+					cout << endl;
+
+					cout << "show part: ";
+					for (int j = 28; j < 35; ++j) {
+						// int l = i_ali[j];
+						// cout << l << " ";
+						cout << ori1[j].X << " ";
+					}
+					cout << endl;
+
+
+					cout << "ori: ";
+					for (int j = 0; j < n_cut; ++j) {
+						cout << ori1[j].X << "--"<<ori2[j].X << " ";
+					}
+					cout << endl;
+
+					cout << "tmp1: ";
+					for (int j = 0; j < n_cut; ++j) {
+						cout << tmp1[j].X << "--"<<tmp2[j].X << " ";
+					}
+					cout << endl;
+				}
+
+				cout << "n_cut: " << n_cut << endl;
+*/				
 				ka=n_cut;
 				kabsch(tmp2,tmp1,ka,rotmat);
 				if(TM_CACHE==1)memset(TMs_cache,0,sizeof(int)*lali);
 				score=Calc_TM_Score_Single(ori1,ori2,ali_orin,rotmat,d0_input,d8_input,TM8orTM,ALLSCO);
+
+				if (L_init == 8 && n_it == 1 && n_cut == 6) {
+					for (int j = 0; j < n_cut; ++j) {
+						cout << tmp1[j].X << "--"<<tmp2[j].X << " ";
+					}
+
+					// for (int j = 0; j < 12; ++j) {
+					// 	cout << rotmat[j] << " ";
+					// }
+					cout << endl;
+				}
+
 				n_cut=Calc_Small_Dist(ori1,ori2,ali_orin,rotmat,ddd,i_ali);
 				if(score_max<score)
 				{

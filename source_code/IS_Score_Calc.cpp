@@ -14,6 +14,32 @@
 using namespace std;
 
 // tools for test
+template<class T>
+void printPairs(const vector<pair<T, T> > &chars) {
+	for(unsigned i = 0; i < chars.size(); ++i) {
+		cout << "(" <<chars[i].first << "," << chars[i].second << ")";
+	}
+	cout << endl;
+}
+
+template<class T>
+void printVector(const vector<T> &chars) {
+	for(unsigned i = 0; i < chars.size(); ++i) {
+		cout << chars[i] << " ";
+	}
+	cout << endl;
+}
+
+template<class T>
+void printVector(const vector<vector<T> > &chars) {
+	for(unsigned i = 0; i < chars.size(); ++i) {
+		cout << i << " - len " << chars[i].size() << ":";
+		printVector<T>(chars[i]);
+	}
+	cout << endl;
+}
+
+
 void printContactMap(const vector<vector<int> > &map) {
 	for (unsigned i = 0; i < map.size(); ++i)
 	{
@@ -206,7 +232,7 @@ int Load_iAlign_Interface_File(string &int_file, vector < vector <int> > &output
 
 
 //========= modified main process ===========//
-void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &interface2, vector<pair<int, int> > &alignment)
+void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &interface2, vector<pair<int, int> >&alignment)
 {
 	int i;
 	int maxnum=3000;
@@ -254,8 +280,7 @@ void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &inter
 	//-> if the alignment is not specified, generate alignment simply as one-to-one correspondence between two lines
 	// and assume them to be of equal length
 	int lali = 0;
-	// flag for whether or not the alignment is initialied for further deletion of arrays
-	bool flag;
+
 	XYZ *effect_mol1 = new XYZ[maxnum];
 	XYZ *effect_mol2 = new XYZ[maxnum];
 
@@ -264,14 +289,11 @@ void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &inter
 		alignment.clear();
 		for(i=0;i<lali;i++)
 			alignment.push_back(pair<int,int>(i+1,i+1));
-		// delete dangling pointers
-		delete[] effect_mol1;
-		delete[] effect_mol2;
 
-		effect_mol1 = mol1;
-		effect_mol2 = mol2;
-
-		flag = false;
+		for (unsigned i = 0; i < alignment.size(); ++i) {
+			effect_mol1[i] = mol1[i];
+			effect_mol2[i] = mol2[i];
+		}
 	}
 	else {
 		// TODO may be modified to the second chain's length
@@ -288,7 +310,6 @@ void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &inter
 			}
 		}
 
-		flag = true;
 	}
 
 	//-> calculate IS-score 
@@ -308,7 +329,14 @@ for(int k=0;k<(int)f_score.size();k++)
 */
 	is_score.overlap_factor=f_score;
 	
+	
+	for(unsigned i = 0; i < 5; ++i) {
+		cout << effect_mol2[i].X << " ";
+	}
+	cout << endl;
+	
 	double isscore=is_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,is_score.d0,is_score.d8,0,0)/moln2;
+	cout << "after isscore\n";
 
 /*
 //--- test ---//
@@ -352,11 +380,9 @@ for(int k=0;k<(int)f_score.size();k++)
 
 
 	//--- delete ---//
-	// if not deleted in previous rounds
-	if (flag) {
-		delete[] effect_mol1;
-		delete[] effect_mol2;
-	}
+	
+	delete[] effect_mol1;
+	delete[] effect_mol2;
 
 	delete [] mol1;
 	delete [] mol2;
@@ -391,17 +417,36 @@ int main(int argc,char **argv)
 		string ialign_out = argv[5];
 
 		iAlign_Output ia;
-		ia.parsePDB(pdb1, 0), ia.parsePDB(pdb2, 1);
+/*
+		vector<vector<string> > chain_numbers;
+		vector<char> chain_types;
+		vector<vector<char> > chain_amis;
+		vector<vector<XYZ> > chain_coords;
+
+		vector<pair<string, string> > raw_alignment;
+		vector<pair<char, char> > raw_labels;
+
+		ia.parsePDB(pdb1, chain_numbers, chain_types, chain_coords, chain_amis);
+		ia.printChainResidues(chain_numbers, chain_types);
+		// printVector<XYZ>(chain_coords[0]);
+		printVector<char>(chain_amis);
+		ia.parsePDB(pdb2, chain_numbers, chain_types, chain_coords, chain_amis);
+		ia.printChainResidues(chain_numbers, chain_types);
+
+		ia.parseiAlignRawAlignment(ialign_out, raw_alignment, raw_labels);
+		printPairs(raw_alignment), printPairs(raw_labels);
+*/
+		ia.parseAllFiles(pdb1, interface1, pdb2, interface2, ialign_out);
+
 		// note: that parseFile() function has to be written after parsePDB functions
 		// since the alignment need information from pdb files (from Residue numbers to indexes in the contact files)
-		ia.parseFile(ialign_out);
+		
+		// ia.parseFile(ialign_out);
 
 		//process
 
 		// this function is the extension of original Calc_IS_Score
 		Calc_IS_Score(pdb1, interface1, pdb2, interface2, ia.alignment);
-		// this function assumes that the alignment is one-to-one
-		// Calc_IS_Score(pdb1, interface1, pdb2, interface2);
 
 		// cout << ia.alignment.size() << endl;
 		// ia.outputData();
