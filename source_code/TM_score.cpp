@@ -399,7 +399,7 @@ tag_402:
 	int n_shift;
 	int it;
 	int neq;
-	cout << "n_init: " << n_init << endl;
+	// cout << "n_init: " << n_init << endl;
 	for(i_init=0;i_init<n_init;i_init++)
 	{
 		L_init=L_ini[i_init];

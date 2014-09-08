@@ -229,7 +229,131 @@ int Load_iAlign_Interface_File(string &int_file, vector < vector <int> > &output
 	//return
 	return (int)output.size();
 }
+//========= modified main process ===========//
+void Calc_IS_Score(iAlign_Output & ia)
+{
+	int maxnum=3000;
+	int moln1=ia.coords[0].size();
+	int moln2=ia.coords[1].size();
+	XYZ *mol1=&(ia.coords[0][0]);
+	XYZ *mol2=&(ia.coords[1][0]);
+	char *ami1=&(ia.amis[0][0]);
+	char *ami2=&(ia.amis[1][0]);
+	vector<pair<int, int> > &alignment = ia.alignment;
+/*
+	//load protein 1
+	//-> load pdb
+	retv=PDB_To_XYZ_NoChain(pdb1,ami1,mol1);
+	if(retv<=0)exit(-1);
+	//-> load interface
+	vector < vector <int> > int1;
+	moln1=Load_iAlign_Interface_File(interface1, int1);
+	if(moln1<=0)exit(-1);
+	//-> check length
+	if(retv!=moln1)
+	{
+		fprintf(stderr,"protein_file_1 (%s,%s) -> pdb_size [%d] not equal to interface_size [%d] !!\n",
+			pdb1.c_str(),interface1.c_str(),retv,moln1);
+		exit(-1);
+	}
 
+	//load protein 2
+	//-> load pdb
+	retv=PDB_To_XYZ_NoChain(pdb2,ami2,mol2);
+	if(retv<=0)exit(-1);
+	//-> load interface
+	vector < vector <int> > int2;
+	moln2=Load_iAlign_Interface_File(interface2, int2);
+	if(moln2<=0)exit(-1);
+	//-> check length
+	if(retv!=moln2)
+	{
+		fprintf(stderr,"protein_file_2 (%s,%s) -> pdb_size [%d] not equal to interface_size [%d] !!\n",
+			pdb2.c_str(),interface2.c_str(),retv,moln2);
+		exit(-1);
+	}
+*/
+	//------- suppose we're working on IS-score, then the size of each input should be EXACTLY the same !! -------//
+	//-> if the alignment is not specified, generate alignment simply as one-to-one correspondence between two lines
+	// and assume them to be of equal length
+	int lali = 0;
+
+	XYZ *effect_mol1 = new XYZ[maxnum];
+	XYZ *effect_mol2 = new XYZ[maxnum];
+
+
+	// TODO may be modified to the second chain's length
+	lali = 0;
+
+	// this serves as extracting out the needed chains and 
+	for (unsigned i = 0; i < alignment.size(); ++i) {
+		if (alignment[i].first > 0 && alignment[i].second > 0) {
+			effect_mol1[lali] = mol1[alignment[i].first - 1];
+			effect_mol2[lali] = mol2[alignment[i].second - 1];
+			lali++;
+
+			// cout << "(" << alignment[i].first - 1 << " " << alignment[i].second - 1 << ")";
+		}
+	}
+
+	vector<vector<int> > &int1 = ia.interfaces[0];
+	vector<vector<int> > &int2 = ia.interfaces[1];
+
+	//-> calculate IS-score 
+	IS_score is_score(max(moln1, moln2));
+	// which one should be the valid normalization number ``L_Q'' (query length)
+	is_score.Calc_TM_d0(moln2);
+	vector <double> f_score;
+	is_score.Calc_Overlap_Factor(int1,int2,alignment,f_score);
+
+	is_score.overlap_factor=f_score;
+	
+	
+	// for(unsigned i = 0; i < 5; ++i) {
+	// 	cout << effect_mol2[i].X << " ";
+	// }
+	// cout << endl;
+	
+	double isscore=is_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,is_score.d0,is_score.d8,0,0)/moln2;
+
+	//-> rescale IS-score
+	// double f0=0.14-0.2*pow(1.0*min(moln1, moln2),-0.3);
+	int scale = moln2;
+	double f0=0.18-0.35*pow(1.0*scale,-0.3);
+
+	double finscore=(isscore+f0)/(1.0+f0);
+
+
+//--- test ---//
+	printf("length_dep_score=%lf, raw_score=%lf, f0=%lf, d0=%lf, IS-score = %lf , lali = %d \n",isscore*moln2,isscore,f0,is_score.d0,finscore,lali);
+//--- test ---//over
+
+	// here starts the scoring for my interface scoring function
+	vector<vector<int > > contact_map;
+	Int_score int_score(max(moln1, moln2));
+	int_score.Calc_TM_d0(moln2);
+	int_score.Calc_Overlap_Factor(int1,int2,alignment,int_score.overlap_factor);
+
+	int_score.Calc_Contact_Map(int1, int_score.contact_map[0]);
+	int_score.Calc_Contact_Map(int2, int_score.contact_map[1]);
+	// printContactMap(int1);
+	// printContactMap(contact_map); 
+	int_score.Calc_BLOSUM_Matrix(ami1, ami2, moln1, moln2, int_score.blos);
+	double intscore=int_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,int_score.d0,int_score.d8,0,0)/moln2;
+	cout << "intscore: " << intscore << endl;
+
+
+	//--- delete ---//
+	
+	delete[] effect_mol1;
+	delete[] effect_mol2;
+/*
+	delete [] mol1;
+	delete [] mol2;
+	delete [] ami1;
+	delete [] ami2;
+*/
+}
 
 //========= modified main process ===========//
 void Calc_IS_Score(string &pdb1, string &interface1, string &pdb2, string &interface2, vector<pair<int, int> >&alignment)
@@ -330,13 +454,12 @@ for(int k=0;k<(int)f_score.size();k++)
 	is_score.overlap_factor=f_score;
 	
 	
-	for(unsigned i = 0; i < 5; ++i) {
-		cout << effect_mol2[i].X << " ";
-	}
-	cout << endl;
+	// for(unsigned i = 0; i < 5; ++i) {
+	// 	cout << effect_mol2[i].X << " ";
+	// }
+	// cout << endl;
 	
 	double isscore=is_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,is_score.d0,is_score.d8,0,0)/moln2;
-	cout << "after isscore\n";
 
 /*
 //--- test ---//
@@ -446,7 +569,8 @@ int main(int argc,char **argv)
 		//process
 
 		// this function is the extension of original Calc_IS_Score
-		Calc_IS_Score(pdb1, interface1, pdb2, interface2, ia.alignment);
+		// Calc_IS_Score(pdb1, interface1, pdb2, interface2, ia.alignment);
+		Calc_IS_Score(ia);
 
 		// cout << ia.alignment.size() << endl;
 		// ia.outputData();

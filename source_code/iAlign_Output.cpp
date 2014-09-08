@@ -468,8 +468,8 @@ void iAlign_Output::realignInterface(const vector<vector<int > >& raw_interface,
 		invert_map[ index_map[i] ] = i;
 	}
 
-	printVector(index_map);
-	printVector(invert_map);
+	// printVector(index_map);
+	// printVector(invert_map);
 	
 	// generate the new interface
 	interface.resize(total_size);
@@ -482,7 +482,7 @@ void iAlign_Output::realignInterface(const vector<vector<int > >& raw_interface,
 		}
 	}
 
-	printVector(interface);
+	// printVector(interface);
 }
 
 
