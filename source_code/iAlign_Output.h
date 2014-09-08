@@ -18,8 +18,14 @@ public:
 	// parse the results as a multimer
 	static int parsePDB(const string &filename, vector<vector<string> > &chain_numbers, vector<char> &chain_types
 		, vector<vector<XYZ> >&chain_coords, vector<vector<char> >&chain_amis);
+	// realign the interface list according to the iAlign's labels (note the labels are all compressed)
+	// residue_number are for the convinience of counting the number of residues in a label (assoc with ori_labels)
+	static void realignInterface(const vector<vector<int > >& raw_interface, const vector<char> &ori_labels, 
+		const vector<char> &ialign_labels, const vector<vector<string> > &residue_number, vector<vector<int> >& interface);
 	// fill the gaps in the (raw) alignment
 	static void fillGapInAlignment(vector<pair<int, int> >&alignment, int residue_number_size1, int residue_size_number2);
+	// parse the interface file as a list, return the size of the interface
+	static int parseInterface(const string &interface_file, vector<vector<int> > &intList);
 	// this function can only be called after the two PDB files have been parsed since it translates the original alignment into the region within the interface (which uses new sequential numbers for indexing)
 	void parseFile(const string &filename);
 	// complex_number is the number for which complex the results should be sent
@@ -40,8 +46,6 @@ public:
 		vector<vector<char> > &protein_amis,
 		);
 		*/
-	// complex_number is the number for which complex should the results be sent
-	int parseInterface(const string &filename, const int complex_number);
 	int size();
 	// for test
 	void outputData();
@@ -58,6 +62,8 @@ public:
 	vector<vector<char> > amis;
 	// residue coordinates returned by joining all proteins
 	vector<vector<XYZ> > coords;
+	// the realigned interfaces based on the results of iAlign result file
+	vector< vector<vector<int> > > interfaces;
 
 private:
 	// map from residue number to 
@@ -65,6 +71,8 @@ private:
 	// the final residues joined by multiple chains and the results from iAlign result file
 	vector<vector<string> > residue_number;
 	vector<vector<char> > residue_label;
+	// the parsed linked results of interfaces
+	vector< vector<vector<int> > > raw_interfaces;
 	// the results of directly parsing the alignment in iAlign result files
 	vector<pair<string, string> > raw_alignment;
 	vector<pair<char, char> > raw_labels;

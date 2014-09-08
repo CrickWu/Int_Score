@@ -189,7 +189,7 @@ void iAlign_Output::parseFile(const string &filename) {
 	printAlignment(alignment);
 	outputData();
 
-	
+
 }
 
 // note that this function can read in multiple chains (>= 2)
@@ -318,7 +318,7 @@ int iAlign_Output::parsePDB(const string &filename, const int complex_number) {
 		iter = ws_mapping.find(name);
 		if(iter != ws_mapping.end())continue;
 		ws_mapping.insert(map < string, int >::value_type(name, count));
-		
+
 		char tmp_chain = buf[21];
 		string tmp_str = buf.substr(22, 6);
 		// trim the white spaces TODO but not considering all whitespaces
@@ -420,12 +420,132 @@ void iAlign_Output::generateFullAlignment() {
 	// printAlignment(alignment);
 
 	fillGapInAlignment(alignment, residue_number[0].size(), residue_number[1].size());
+
+	// realign the interface list
+	interfaces.resize(2);
+	realignInterface(raw_interfaces[0], sep_residue_label[0], compressed_labels[0], sep_residue_number[0], interfaces[0]);
+	realignInterface(raw_interfaces[1], sep_residue_label[1], compressed_labels[1], sep_residue_number[1], interfaces[1]);
 }
 
-void iAlign_Output::parseAllFiles(const string &pdb1, const string &interface1, 
+void iAlign_Output::realignInterface(const vector<vector<int > >& raw_interface, const vector<char> &ori_labels, 
+	const vector<char> &ialign_labels, const vector<vector<string> > &residue_number, vector<vector<int> >& interface) {
+	int total_size = raw_interface.size();
+	// vectors recording the size of each chain
+	vector<int> residue_number_size(residue_number.size(), 0);
+	for(unsigned i = 0; i < residue_number.size(); ++i) {
+		residue_number_size[i] = residue_number[i].size();
+	}
+	// vector each denoting the aggregated size
+	vector<int> aggregated_residue_number_size(residue_number.size(), 0);
+	for(unsigned i = 1; i < residue_number.size(); ++i) {
+		aggregated_residue_number_size[i] = aggregated_residue_number_size[i-1] + residue_number_size[i-1];
+	}
+	// construct the mapping
+	vector<int> index_map(total_size, 0);
+
+	int current_filling_number = 0;
+	for(unsigned i = 0; i < residue_number.size(); ++i) {
+		// find the original order of ialign_labels
+		// index of j
+		int ori_index = 0;
+		for(unsigned j = 0; j < residue_number.size(); ++j) {
+			if (ialign_labels[i] == ori_labels[j]) {
+				ori_index = j;
+				break;
+			}
+		}
+		// number of elements before the chain in the original labels
+		int elements_before = aggregated_residue_number_size[ori_index];
+		for(unsigned j = 0; j < residue_number[ori_index].size(); ++j) {
+			index_map[elements_before + j] = current_filling_number;
+			current_filling_number++;
+		}
+	}
+
+	// generate invert mapping
+	vector<int> invert_map(total_size, 0);
+	for(int i = 0; i < total_size; ++i) {
+		invert_map[ index_map[i] ] = i;
+	}
+
+	printVector(index_map);
+	printVector(invert_map);
+	
+	// generate the new interface
+	interface.resize(total_size);
+	for(int i = 0; i < total_size; ++i) {
+		// interface[i]  invert_map[i]'s entries, convert with index_map
+		int ori_index = invert_map[i];
+		interface[i].clear();
+		for(unsigned j = 0; j < raw_interface[ori_index].size(); ++j) {
+			interface[i].push_back(index_map[ raw_interface[ori_index][j] ]);
+		}
+	}
+
+	printVector(interface);
+}
+
+
+int iAlign_Output::parseInterface(const string &interface_file, vector<vector<int> > &intList) {
+	ifstream fin;
+	string buf,temp;
+	//read
+	fin.open(interface_file.c_str(), ios::in);
+	if(fin.fail()!=0)
+	{
+		fprintf(stderr,"interface_file %s not found!!\n",interface_file.c_str());
+		return -1;
+	}
+	intList.clear();
+	//skip
+	int found=0;
+	for(;;)
+	{
+		if(!getline(fin,buf,'\n'))break;
+		istringstream www(buf);
+		www>>temp;
+		if(temp=="ResIndex")
+		{
+			found=1;
+			break;
+		}
+	}
+	if(found==0)
+	{
+		fprintf(stderr,"interface_file %s format bad!!\n",interface_file.c_str());
+		return -1;
+	}
+	//proc
+	for(;;)
+	{
+		if(!getline(fin,buf,'\n'))break;
+		istringstream www(buf);
+		vector <int> tmp_rec;
+		int num;
+		www>> temp >>temp>>num;
+		if(num==0)
+		{
+			intList.push_back(tmp_rec);
+			continue;
+		}
+		//load
+		int pos;
+		for(;;)
+		{
+			if( ! (www>>pos) )break;
+			pos--;
+			tmp_rec.push_back(pos);
+		}
+		intList.push_back(tmp_rec);
+	}
+	//return
+	return (int)intList.size();	
+}
+
+void iAlign_Output::parseAllFiles(const string &pdb1, const string &interface1,
 	const string &pdb2, const string &interface2, const string &ialign_out) {
 
-	parsePDB(pdb1, sep_residue_number[0], sep_residue_label[0], sep_coords[0], sep_amis[0]);	
+	parsePDB(pdb1, sep_residue_number[0], sep_residue_label[0], sep_coords[0], sep_amis[0]);
 	// printChainResidues(sep_residue_number[0], sep_residue_label[0]);
 	// printVector(sep_amis[0][0]);printVector(sep_amis[0][1]);
 
@@ -434,6 +554,9 @@ void iAlign_Output::parseAllFiles(const string &pdb1, const string &interface1,
 
 	parseiAlignRawAlignment(ialign_out, raw_alignment, raw_labels);
 	// printPairs(raw_alignment), printPairs(raw_labels);
+
+	parseInterface(interface1, raw_interfaces[0]);
+	parseInterface(interface2, raw_interfaces[1]);
 
 	generateFullAlignment();
 }
@@ -467,7 +590,7 @@ void iAlign_Output::outputData() {
 		cout << "Size: " << size << "\t";
 		for (int i = 0; i < size; ++i) {
 			cout << residue_number[j][i] << " ";
-		}	
+		}
 		cout << endl;
 	}
 
@@ -489,8 +612,10 @@ iAlign_Output::iAlign_Output() {
 
 	number_to_index_map.resize(2);
 
+	raw_interfaces.resize(2);
+
 	sep_amis.resize(2);
-	sep_coords.resize(2); 
+	sep_coords.resize(2);
 	sep_residue_number.resize(2);
 	sep_residue_label.resize(2);
 
