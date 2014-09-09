@@ -380,11 +380,13 @@ void iAlign_Output::generateFullAlignment() {
 	}
 
 	// join chains to a whole string based on the order of compressed_labels
-	residue_number.clear();
-	residue_label.clear();
-	amis.clear();
-	coords.clear();
+	
 	for(unsigned i = 0; i < 2; ++i) {
+		residue_number[i].clear();
+		residue_label[i].clear();
+		amis[i].clear();
+		coords[i].clear();
+		
 		for(unsigned j = 0; j < compressed_labels[i].size(); ++j) {
 			// find the proper, join when sep_residue_label[i(0 or 1)][?] == compressed_labels[0 or 1][j]
 			for(unsigned k = 0; k < sep_residue_label[i].size(); ++k) {
