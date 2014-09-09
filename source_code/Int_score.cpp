@@ -4,8 +4,9 @@
 Int_score::Int_score(int num)
 :TM_score(num)
 {
-	// default value shows that the complex a dimer
+	// default value shows that we compare between two proteins
 	contact_map.resize(2);
+	distance_matrix.resize(2);
 }
 Int_score::~Int_score(void)
 {
@@ -107,6 +108,23 @@ void Int_score::Calc_BLOSUM_Matrix(char const * ami1, char const* ami2, int moln
 	}
 }
 
+// calculate the distance matrix
+void Int_score::Calc_Distance_Matrix(XYZ const *coords, int size, vector<vector<double> > &dist) {
+	// initialize dist
+	dist.resize(size);
+	for(int i = 0; i < size; ++i) {
+		dist[i].resize(size);
+		dist[i].assign(size, -1);
+	}
+
+	// calculate distance matrix from the coords
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			dist[i][j] = dist[j][i] = coords[i].distance(coords[j]);
+		}
+	}
+}
+
 //--------- Calc_TM_Score_Single -------//
 double Int_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,double d8,
 	int TM8orTM,double *ALLSCO)
@@ -128,7 +146,9 @@ double Int_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotm
 			TMs_Cache_Point(mol1,i,tempi,rotmat_);
 			dist2i=mol2[i].distance_square(tempi);
 			// score+=overlap_factor[i]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
-			score+=blos[i][j]*contact_map[0][i][j]*contact_map[1][i][j]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
+			// score+=blos[i][j]*contact_map[0][i][j]*contact_map[1][i][j]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
+			score+=blos[i][j] / (1.0+(distance_matrix[0][i][j]-distance_matrix[1][i][j])*(distance_matrix[0][i][j]-distance_matrix[1][i][j])/4.0)
+			/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d); // norm factos is 4.0
 		}
 	}
 	return score;

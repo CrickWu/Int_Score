@@ -15,6 +15,7 @@ public:
 	vector < double > overlap_factor;  //length should be ali_orin
 	vector<vector<vector<int> > > contact_map; //the contact map which can be based on the results of a linked list: contact_map[0], contact_map[1] is the one for mol1 and mol2 respectively
 	vector<vector<double> > blos; // the BLOSUM matrix related items for multiplying
+	vector<vector<vector<double> > > distance_matrix; // the distance matrix which denotes the distances between residues within a protein
 
 //---- functions ----//
 public:
@@ -22,5 +23,6 @@ public:
 	void Calc_Contact_Map(const vector<vector<int> > &in, vector<vector<int> > &map);
 	void Calc_Overlap_Factor(vector < vector <int> > &in1, vector < vector <int> > &int2, 
 		vector <pair<int,int> > &alignment ,vector < double > &out);
+	void Calc_Distance_Matrix(XYZ const* coords, int size, vector<vector<double> > &dist);
 	double Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,double d8,int TM8orTM=0, double *ALLSCO=0);
 };

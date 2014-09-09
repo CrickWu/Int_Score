@@ -336,6 +336,9 @@ void Calc_IS_Score(iAlign_Output & ia)
 
 	int_score.Calc_Contact_Map(int1, int_score.contact_map[0]);
 	int_score.Calc_Contact_Map(int2, int_score.contact_map[1]);
+
+	int_score.Calc_Distance_Matrix(effect_mol1, lali, int_score.distance_matrix[0]);
+	int_score.Calc_Distance_Matrix(effect_mol2, lali, int_score.distance_matrix[1]);
 	// printContactMap(int1);
 	// printContactMap(contact_map); 
 	int_score.Calc_BLOSUM_Matrix(ami1, ami2, moln1, moln2, int_score.blos);
