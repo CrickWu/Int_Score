@@ -318,8 +318,8 @@ void Calc_IS_Score(iAlign_Output & ia)
 	int_score.Calc_Distlap_Factor(mol1, mol2, int1, int2, alignment, int_score.distlap_factor);
 
 	double intscore=int_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,int_score.d0,int_score.d8,0,0)/moln2;
-	cout << "scale: " << moln2 << endl;
 	cout << "intscore: " << intscore << endl;
+	cout << "scale: " << moln2 << endl;
 
 
 	//--- delete ---//
