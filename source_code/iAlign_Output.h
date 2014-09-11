@@ -28,8 +28,6 @@ public:
 	static int parseInterface(const string &interface_file, vector<vector<int> > &intList);
 	// this function can only be called after the two PDB files have been parsed since it translates the original alignment into the region within the interface (which uses new sequential numbers for indexing)
 	void parseFile(const string &filename);
-	// complex_number is the number for which complex the results should be sent
-	int parsePDB(const string &filename, const int complex_number);
 	// parse the entire files
 	void parseAllFiles(const string &pdb1, const string &interface1, 
 		const string &pdb2, const string &interface2, const string &ialign_out);
@@ -65,6 +63,9 @@ public:
 	// the realigned interfaces based on the results of iAlign result file
 	vector< vector<vector<int> > > interfaces;
 
+	// the results of directly parsing the alignment in iAlign result files
+	vector<pair<string, string> > raw_alignment;
+	vector<pair<char, char> > raw_labels;
 private:
 	// map from residue number to 
 	vector<map<pair<char, string>, int> > number_to_index_map;
@@ -73,9 +74,6 @@ private:
 	vector<vector<char> > residue_label;
 	// the parsed linked results of interfaces
 	vector< vector<vector<int> > > raw_interfaces;
-	// the results of directly parsing the alignment in iAlign result files
-	vector<pair<string, string> > raw_alignment;
-	vector<pair<char, char> > raw_labels;
 
 	//separate reisidue_chains 
 	// for vector<vector<vector<T> > > **[0][0][*] **[0][1][*] ... are the chains for dimer[0]

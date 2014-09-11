@@ -240,39 +240,6 @@ void Calc_IS_Score(iAlign_Output & ia)
 	char *ami1=&(ia.amis[0][0]);
 	char *ami2=&(ia.amis[1][0]);
 	vector<pair<int, int> > &alignment = ia.alignment;
-/*
-	//load protein 1
-	//-> load pdb
-	retv=PDB_To_XYZ_NoChain(pdb1,ami1,mol1);
-	if(retv<=0)exit(-1);
-	//-> load interface
-	vector < vector <int> > int1;
-	moln1=Load_iAlign_Interface_File(interface1, int1);
-	if(moln1<=0)exit(-1);
-	//-> check length
-	if(retv!=moln1)
-	{
-		fprintf(stderr,"protein_file_1 (%s,%s) -> pdb_size [%d] not equal to interface_size [%d] !!\n",
-			pdb1.c_str(),interface1.c_str(),retv,moln1);
-		exit(-1);
-	}
-
-	//load protein 2
-	//-> load pdb
-	retv=PDB_To_XYZ_NoChain(pdb2,ami2,mol2);
-	if(retv<=0)exit(-1);
-	//-> load interface
-	vector < vector <int> > int2;
-	moln2=Load_iAlign_Interface_File(interface2, int2);
-	if(moln2<=0)exit(-1);
-	//-> check length
-	if(retv!=moln2)
-	{
-		fprintf(stderr,"protein_file_2 (%s,%s) -> pdb_size [%d] not equal to interface_size [%d] !!\n",
-			pdb2.c_str(),interface2.c_str(),retv,moln2);
-		exit(-1);
-	}
-*/
 	//------- suppose we're working on IS-score, then the size of each input should be EXACTLY the same !! -------//
 	//-> if the alignment is not specified, generate alignment simply as one-to-one correspondence between two lines
 	// and assume them to be of equal length
@@ -281,6 +248,12 @@ void Calc_IS_Score(iAlign_Output & ia)
 	XYZ *effect_mol1 = new XYZ[maxnum];
 	XYZ *effect_mol2 = new XYZ[maxnum];
 
+	// values are ia.raw_labels[i].first/second
+	vector<char> effect_chain_labels1, effect_chain_labels2;
+	for(unsigned i = 0; i < ia.raw_labels.size(); ++i) {
+		effect_chain_labels1.push_back(ia.raw_labels[i].first);
+		effect_chain_labels2.push_back(ia.raw_labels[i].second);
+	}
 
 	// TODO may be modified to the second chain's length
 	lali = 0;
@@ -290,9 +263,8 @@ void Calc_IS_Score(iAlign_Output & ia)
 		if (alignment[i].first > 0 && alignment[i].second > 0) {
 			effect_mol1[lali] = mol1[alignment[i].first - 1];
 			effect_mol2[lali] = mol2[alignment[i].second - 1];
-			lali++;
 
-			// cout << "(" << alignment[i].first - 1 << " " << alignment[i].second - 1 << ")";
+			lali++;
 		}
 	}
 
@@ -342,7 +314,11 @@ void Calc_IS_Score(iAlign_Output & ia)
 	// printContactMap(int1);
 	// printContactMap(contact_map); 
 	int_score.Calc_BLOSUM_Matrix(ami1, ami2, moln1, moln2, int_score.blos);
+
+	int_score.Calc_Distlap_Factor(mol1, mol2, int1, int2, alignment, int_score.distlap_factor);
+
 	double intscore=int_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,int_score.d0,int_score.d8,0,0)/moln2;
+	cout << "scale: " << moln2 << endl;
 	cout << "intscore: " << intscore << endl;
 
 
@@ -350,12 +326,6 @@ void Calc_IS_Score(iAlign_Output & ia)
 	
 	delete[] effect_mol1;
 	delete[] effect_mol2;
-/*
-	delete [] mol1;
-	delete [] mol2;
-	delete [] ami1;
-	delete [] ami2;
-*/
 }
 
 //========= modified main process ===========//

@@ -125,6 +125,87 @@ void Int_score::Calc_Distance_Matrix(XYZ const *coords, int size, vector<vector<
 	}
 }
 
+// calculate the distance-related factor
+// and the function should be called after Calc_Distance_Matrix (since it needs to utilize the information)
+void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, const vector<char> &chain_labels1, const vector<char> &chain_labels2
+	, const vector < vector <int> > &in1, const vector < vector <int> > &in2, const vector<pair<int, int> >&alignment, vector<double> &distlap_factor) {
+	int size = alignment.size();
+
+	// calculate the factor, the function can be of two forms
+	// 1. 1/1+(d_1-d_2)^2/c^2
+	// 2. inner product
+
+	// method 1. with only contact residues taken into consideration
+
+
+	// note that coords has to be in agreement with ins (about the size)
+	int i,j,k;
+	int ii,jj;
+	int moln1=in1.size();
+	int moln2=in2.size();
+	vector <int> ali1 (moln1,-1);
+	vector <int> ali2 (moln2,-2);
+
+	// first calculate the distant matrix
+	vector<vector<double> > dist1, dist2;
+	Calc_Distance_Matrix(coords1, moln1, dist1);
+	Calc_Distance_Matrix(coords2, moln2, dist2);
+
+	//assign alignment
+	for(i=0;i<size;i++)
+	{
+		ii=alignment[i].first;
+		jj=alignment[i].second;
+		if(ii>0 && jj>0 && ii<=moln1 && jj<=moln2)
+		{
+			ali1[ii-1]=i;
+			ali2[jj-1]=i;
+		}
+	}
+
+	//calculate overlap
+	// initialize distlap_factor
+	distlap_factor.clear();
+	for(i=0;i<size;i++)
+	{
+		ii=alignment[i].first;
+		jj=alignment[i].second;
+		if(ii>0 && jj>0)
+		{
+			//init
+			int size1=(int)in1[ii-1].size();
+			int size2=(int)in2[jj-1].size();
+			//calc
+			double col=0;
+			for(j=0;j<size1;j++)
+			{
+				int pos1=in1[ii-1][j];
+				for(k=0;k<size2;k++)
+				{
+					int pos2=in2[jj-1][k];
+					if(ali1[pos1]==ali2[pos2])
+					{
+						// distance difference
+						double diff = dist1[ii][j] - dist2[jj][k];
+						// or d0
+						double denom = 4.0;
+						// double denom = d0;
+						// the score is changed
+						col += 1.0/(1.0 + diff * diff / denom);
+						break;
+					}
+				}
+			}
+			//assign
+			double fcol=0;
+			// if( size1>0 && size2>0 ) fcol=(1.0*col/size1 + 1.0*col/size2)/2.0;
+			if( size1>0 && size2>0 ) fcol=1.0 * col / sqrt(1.0 * size1 * size2);
+			distlap_factor.push_back(fcol);
+		}
+	}
+
+}
+
 //--------- Calc_TM_Score_Single -------//
 double Int_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotmat_,double d0,double d8,
 	int TM8orTM,double *ALLSCO)
@@ -147,7 +228,9 @@ double Int_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotm
 			dist2i=mol2[i].distance_square(tempi);
 			// score+=overlap_factor[i]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
 			// score+=blos[i][j]*contact_map[0][i][j]*contact_map[1][i][j]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
-			score+=blos[i][j] / (1.0+(distance_matrix[0][i][j]-distance_matrix[1][i][j])*(distance_matrix[0][i][j]-distance_matrix[1][i][j])/4.0)
+			// score+=blos[i][j] / (1.0+(distance_matrix[0][i][j]-distance_matrix[1][i][j])*(distance_matrix[0][i][j]-distance_matrix[1][i][j])/4.0)
+			// score+=blos[i][j] * overlap_factor[i] * overlap_factor[j]
+			score+=blos[i][j] * distlap_factor[i] * distlap_factor[j]
 			/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d); // norm factos is 4.0
 		}
 	}

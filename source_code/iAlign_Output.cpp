@@ -282,59 +282,6 @@ int iAlign_Output::parsePDB(const string &filename, vector<vector<string> > &cha
 	return count;
 }
 
-int iAlign_Output::parsePDB(const string &filename, const int complex_number) {
-		//--- list for mapping ---//
-	map<string, int > ws_mapping;
-	map<string, int>::iterator iter;
-	ws_mapping.clear();
-	ifstream fin;
-	string buf,temp,name;
-	//read
-	fin.open(filename.c_str(), ios::in);
-	if(fin.fail()!=0)
-	{
-		fprintf(stderr,"pdb_file %s not found!!\n", filename.c_str());
-		return -1;
-	}
-	int len;
-	int count=0;
-	for(;;)
-	{
-		if(!getline(fin,buf,'\n'))break;
-		len=(int)buf.length();
-		if(len<3)continue;
-		//check TER
-		temp=buf.substr(0,3);
-		if(temp=="END")break;
-		//check ATOM
-		if(len<4)continue;
-		temp=buf.substr(0,4);
-		if(temp!="ATOM"&&temp!="HETA")continue;
-		//check CA
-		temp=buf.substr(13,2);
-		if(temp!="CA")continue;
-		//record name
-		name=buf.substr(21,6);
-		iter = ws_mapping.find(name);
-		if(iter != ws_mapping.end())continue;
-		ws_mapping.insert(map < string, int >::value_type(name, count));
-
-		char tmp_chain = buf[21];
-		string tmp_str = buf.substr(22, 6);
-		// trim the white spaces TODO but not considering all whitespaces
-		tmp_str = tmp_str.substr(tmp_str.find_first_not_of(" "));
-		tmp_str = tmp_str.substr(0, tmp_str.find_last_not_of(" ")+1);
-
-		residue_number[complex_number].push_back(tmp_str);
-		residue_label[complex_number].push_back(tmp_chain);
-
-		number_to_index_map[complex_number][pair<char, string>(tmp_chain, tmp_str)] = count;
-		count++;
-	}
-	fin.close();
-
-	return count;
-}
 void iAlign_Output::fillGapInAlignment(vector<pair<int, int> >&alignment, int residue_number_size1, int residue_number_size2) {
 	//-- fill the alignment with gaps, the second chain would be gapped ealier than the first chain --
 	vector<pair<int, int> > tmp_alignment = alignment;
