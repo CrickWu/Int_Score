@@ -186,7 +186,7 @@ void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, co
 					if(ali1[pos1]==ali2[pos2])
 					{
 						// distance difference
-						double diff = dist1[ii][j] - dist2[jj][k];
+						double diff = dist1[ii-1][pos1] - dist2[jj-1][pos2];
 						// or d0
 						double denom = 4.0;
 						// double denom = d0;

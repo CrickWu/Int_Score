@@ -271,6 +271,8 @@ void Calc_IS_Score(iAlign_Output & ia)
 	vector<vector<int> > &int1 = ia.interfaces[0];
 	vector<vector<int> > &int2 = ia.interfaces[1];
 
+/*
+
 	//-> calculate IS-score 
 	IS_score is_score(max(moln1, moln2));
 	// which one should be the valid normalization number ``L_Q'' (query length)
@@ -279,12 +281,6 @@ void Calc_IS_Score(iAlign_Output & ia)
 	is_score.Calc_Overlap_Factor(int1,int2,alignment,f_score);
 
 	is_score.overlap_factor=f_score;
-	
-	
-	// for(unsigned i = 0; i < 5; ++i) {
-	// 	cout << effect_mol2[i].X << " ";
-	// }
-	// cout << endl;
 	
 	double isscore=is_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,is_score.d0,is_score.d8,0,0)/moln2;
 
@@ -299,7 +295,7 @@ void Calc_IS_Score(iAlign_Output & ia)
 //--- test ---//
 	printf("length_dep_score=%lf, raw_score=%lf, f0=%lf, d0=%lf, IS-score = %lf , lali = %d \n",isscore*moln2,isscore,f0,is_score.d0,finscore,lali);
 //--- test ---//over
-
+*/
 	// here starts the scoring for my interface scoring function
 	vector<vector<int > > contact_map;
 	Int_score int_score(max(moln1, moln2));
