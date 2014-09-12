@@ -27,6 +27,14 @@ void Int_score::Calc_Overlap_Factor(vector < vector <int> > &in1, vector < vecto
 	vector <int> ali1 (moln1,-1);
 	vector <int> ali2 (moln2,-2);
 
+	int total_overlap = 0;
+	// molx_contact = sum(len(inx[i]))
+	int mol1_contact = 0, mol2_contact = 0;
+	for (i = 0; i < moln1; i++)
+		mol1_contact += in1[i].size();
+	for (i = 0; i < moln2; i++)
+		mol2_contact += in2[i].size();
+
 	//assign alignment
 	for(i=0;i<size;i++)
 	{
@@ -66,11 +74,15 @@ void Int_score::Calc_Overlap_Factor(vector < vector <int> > &in1, vector < vecto
 				}
 			}
 			//assign
+			total_overlap += col;
 			double fcol=0;
 			if( size1>0 && size2>0 ) fcol=(1.0*col/size1 + 1.0*col/size2)/2.0;
 			out.push_back(fcol);
 		}
 	}
+
+	// calculate contact overlap ratio
+	contact_overlap_ratio = (double) total_overlap / min(mol1_contact, mol2_contact);
 }
 
 // calculate the contact map
@@ -146,6 +158,15 @@ void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, co
 	vector <int> ali1 (moln1,-1);
 	vector <int> ali2 (moln2,-2);
 
+	double total_overlap = 0.0;
+	double mol1_diff = 0.0, mol2_diff = 0.0;
+	// molx_contact = sum(len(inx[i]))
+	int mol1_contact = 0, mol2_contact = 0;
+	for (i = 0; i < moln1; i++)
+		mol1_contact += in1[i].size();
+	for (i = 0; i < moln2; i++)
+		mol2_contact += in2[i].size();
+
 	// first calculate the distant matrix
 	vector<vector<double> > dist1, dist2;
 	Calc_Distance_Matrix(coords1, moln1, dist1);
@@ -198,12 +219,27 @@ void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, co
 			}
 			//assign
 			double fcol=0;
-			// if( size1>0 && size2>0 ) fcol=(1.0*col/size1 + 1.0*col/size2)/2.0;
-			if( size1>0 && size2>0 ) fcol=1.0 * col / sqrt(1.0 * size1 * size2);
+			double denom1 = 0.0, denom2 = 0.0;
+			for (j = 0; j < size1; j++) {
+				// cout << dist1[ii-1][ in1[ii-1][j] ] << "--\n";
+				denom1 += 1.0 / (1.0 + (dist1[ii-1][ in1[ii-1][j] ] - 3) * (dist1[ii-1][ in1[ii-1][j] ] - 3) / 2);
+			}
+			for (j = 0; j < size2; j++)
+				denom2 += 1.0 / (1.0 + (dist2[jj-1][ in2[jj-1][j] ] - 3) * (dist1[jj-1][ in2[jj-1][j] ] - 3) / 2);
+			total_overlap += col;
+			mol1_diff += denom1;
+			mol2_diff += denom2;
+			if( size1>0 && size2>0 ) fcol=(1.0*col/denom1 + 1.0*col/denom2)/2.0;
+			// cout << fcol<<" "<< col << " " << denom1 << " " << denom2 << endl;
+			// if( size1>0 && size2>0 ) fcol=1.0 * col / sqrt(1.0 * denom2 * denom1);
 			distlap_factor.push_back(fcol);
 		}
 	}
 
+	// calculate contact overlap ratio
+	dist_overlap_ratio = total_overlap / min(mol1_contact, mol2_contact);
+	dist_overlap_diff = total_overlap / min(mol1_diff, mol2_diff);
+	cout << "mol_diff:" << total_overlap << " " << mol1_diff << " " << mol2_diff << endl;
 }
 
 //--------- Calc_TM_Score_Single -------//
@@ -229,8 +265,8 @@ double Int_score::Calc_TM_Score_Single(XYZ *mol1,XYZ *mol2,int lali,double *rotm
 			// score+=overlap_factor[i]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
 			// score+=blos[i][j]*contact_map[0][i][j]*contact_map[1][i][j]/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d);
 			// score+=blos[i][j] / (1.0+(distance_matrix[0][i][j]-distance_matrix[1][i][j])*(distance_matrix[0][i][j]-distance_matrix[1][i][j])/4.0)
-			// score+=blos[i][j] * overlap_factor[i] * overlap_factor[j]
-			score+=blos[i][j] * distlap_factor[i] * distlap_factor[j]
+			score+=blos[i][j] * overlap_factor[i] * overlap_factor[j]
+			// score+=blos[i][j] * distlap_factor[i] * distlap_factor[j]
 			/(1.0+dist2i/ori_d) / (1.0+dist2j/ori_d); // norm factos is 4.0
 		}
 	}

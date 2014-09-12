@@ -12,6 +12,10 @@ public:
 
 //---- variables ----//
 public:
+	double dist_overlap_diff; // overlapped dist difference / min(total_contacts[x])
+	double dist_overlap_ratio; // overlapped dist difference / min(total_contacts[x])
+	double contact_overlap_ratio; // overlapped contacts / min(total_contacts[x])
+
 	vector < double > overlap_factor;  //length should be ali_orin
 	vector<vector<vector<int> > > contact_map; //the contact map which can be based on the results of a linked list: contact_map[0], contact_map[1] is the one for mol1 and mol2 respectively
 	vector<vector<double> > blos; // the BLOSUM matrix related items for multiplying

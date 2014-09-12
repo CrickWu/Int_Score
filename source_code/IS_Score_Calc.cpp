@@ -316,6 +316,9 @@ void Calc_IS_Score(iAlign_Output & ia)
 	double intscore=int_score.Calc_TM_Score(effect_mol1,effect_mol2,lali,int_score.d0,int_score.d8,0,0)/moln2;
 	cout << "intscore: " << intscore << endl;
 	cout << "scale: " << moln2 << endl;
+	cout << "contact_overlap_ratio:" << int_score.contact_overlap_ratio << endl;
+	cout << "dist_overlap_ratio:" << int_score.dist_overlap_ratio << endl;
+	cout << "dist_overlap_diff:" << int_score.dist_overlap_diff << endl;
 
 
 	//--- delete ---//
