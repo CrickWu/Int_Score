@@ -186,9 +186,11 @@ void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, co
 
 	//calculate overlap
 	// initialize distlap_factor
+	// cout << "size: " << size << endl;
 	distlap_factor.clear();
 	for(i=0;i<size;i++)
 	{
+		// cout << i << ": ";
 		ii=alignment[i].first;
 		jj=alignment[i].second;
 		if(ii>0 && jj>0)
@@ -224,8 +226,10 @@ void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, co
 				// cout << dist1[ii-1][ in1[ii-1][j] ] << "--\n";
 				denom1 += 1.0 / (1.0 + (dist1[ii-1][ in1[ii-1][j] ] - 3) * (dist1[ii-1][ in1[ii-1][j] ] - 3) / 2);
 			}
-			for (j = 0; j < size2; j++)
-				denom2 += 1.0 / (1.0 + (dist2[jj-1][ in2[jj-1][j] ] - 3) * (dist1[jj-1][ in2[jj-1][j] ] - 3) / 2);
+			// cout << size2 << endl;
+			for (j = 0; j < size2; j++) {
+				denom2 += 1.0 / (1.0 + (dist2[jj-1][ in2[jj-1][j] ] - 3) * (dist2[jj-1][ in2[jj-1][j] ] - 3) / 2);
+			}
 			total_overlap += col;
 			mol1_diff += denom1;
 			mol2_diff += denom2;
@@ -239,7 +243,7 @@ void Int_score::Calc_Distlap_Factor(XYZ const *coords1, XYZ const *coords2//, co
 	// calculate contact overlap ratio
 	dist_overlap_ratio = total_overlap / min(mol1_contact, mol2_contact);
 	dist_overlap_diff = total_overlap / min(mol1_diff, mol2_diff);
-	cout << "mol_diff:" << total_overlap << " " << mol1_diff << " " << mol2_diff << endl;
+	// cout << "mol_diff:" << total_overlap << " " << mol1_diff << " " << mol2_diff << endl;
 }
 
 //--------- Calc_TM_Score_Single -------//
